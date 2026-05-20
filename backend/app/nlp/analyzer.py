@@ -1,6 +1,6 @@
-from preprocessing import clean_text, tokenize
-from sentiment import analyze_sentiment
-from metrics import *
+from backend.app.nlp.preprocessing import clean_text, tokenize
+from backend.app.nlp.sentiment import analyze_sentiment
+from backend.app.nlp.metrics import *
 
 def analyze_submission(text):
 
