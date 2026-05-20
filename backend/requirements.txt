@@ -5,3 +5,5 @@ nltk
 textstat
 jupyterlab
 scikit-learn
+sqlmodel
+fastapi
