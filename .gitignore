@@ -1,9 +1,8 @@
-.venv
-.ipynb_checkpoints
 __pycache__
+app.egg-info
 *.pyc
-*.pyo
-*.pyd
-*.db
-*.sqlite3
-*.log
+.mypy_cache
+.coverage
+htmlcov
+.cache
+.venv
