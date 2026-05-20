@@ -3,3 +3,5 @@ textblob
 pandas
 nltk
 textstat
+jupyterlab
+scikit-learn
