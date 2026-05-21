@@ -1,9 +1,6 @@
-spacy
-textblob
 pandas
-nltk
-textstat
 jupyterlab
 scikit-learn
+joblib
 sqlmodel
-fastapi
+fastapi[standard]
