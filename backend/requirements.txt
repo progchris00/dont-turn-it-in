@@ -4,3 +4,5 @@ scikit-learn
 joblib
 sqlmodel
 fastapi[standard]
+psycopg2-binary
+python-dotenv
