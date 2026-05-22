@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+:root {
+  --custom-color: #feefe7;
+  --hover-text-orange: #f57a38;
+  --button-primary-color: #ea580c;
+  --hover-button-secondary-color: #c74c0a;
+  --dark: #0f172a;
+  --light: #f8fafc;
+}
+
+.bg-custom-orange {
+  background-color: var(--custom-color);
+}
+
+.hover-text-orange:hover {
+  color: var(--hover-text-orange);
+}
+.button-primary {
+  background-color: var(--button-primary-color);
+}
+.hover-button-secondary-color:hover {
+  background-color: var(--hover-button-secondary-color);
+}
