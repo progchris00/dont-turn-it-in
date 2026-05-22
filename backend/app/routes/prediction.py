@@ -5,7 +5,7 @@ from app.database import get_session
 from app.ml.predictor import predict_text
 from app.services.submission_service import create_submission
 
-router = APIRouter()
+router = APIRouter(prefix="/api", tags=["prediction"])
 
 
 @router.post("/predict")
