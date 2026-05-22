@@ -29,7 +29,7 @@ async def predict_file(
         session=session,
         text=text,
         prediction=result["prediction"],
-        ai_probability=result["ai_probability"]
+        ai_probability=float(result["ai_probability"])
     )
 
     return {
