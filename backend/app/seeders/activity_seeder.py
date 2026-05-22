@@ -1,5 +1,6 @@
 from sqlmodel import Session, select, SQLModel
 from app.database import engine
+from app.auth import hash_password
 from app.models.activity import Activity
 from app.models.student import Student
 from app.models.section import Section
@@ -29,8 +30,18 @@ def seed_activities():
         session.refresh(section_b)
 
         # Create example students and assign to sections
-        john = Student(student_name="John Doe", section_id=section_a.id)
-        jane = Student(student_name="Jane Smith", section_id=section_b.id)
+        john = Student(
+            student_name="John Doe",
+            username="john.doe",
+            password_hash=hash_password("password123"),
+            section_id=section_a.id,
+        )
+        jane = Student(
+            student_name="Jane Smith",
+            username="jane.smith",
+            password_hash=hash_password("password123"),
+            section_id=section_b.id,
+        )
         session.add(john)
         session.add(jane)
         session.commit()

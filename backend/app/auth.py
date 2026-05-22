@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from sqlmodel import Session, select
+from passlib.context import CryptContext
 
 from app.database import get_session
 from app.models.student import Student
@@ -16,10 +17,12 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 
 bearer_scheme = HTTPBearer()
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
 class TokenRequest(BaseModel):
-    student_id: int
+    username: str
+    password: str
 
 
 class TokenResponse(BaseModel):
@@ -27,13 +30,23 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     student_id: int
     student_name: str
+    username: str
     section_id: int | None = None
 
 
 class CurrentStudentResponse(BaseModel):
     student_id: int
     student_name: str
+    username: str
     section_id: int | None = None
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return pwd_context.verify(password, password_hash)
 
 
 def create_access_token(student_id: int) -> str:
@@ -47,9 +60,15 @@ def create_access_token(student_id: int) -> str:
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
-def authenticate_student(session: Session, student_id: int) -> Student:
-    student = session.exec(select(Student).where(Student.id == student_id)).first()
+def authenticate_student(session: Session, username: str, password: str) -> Student:
+    student = session.exec(select(Student).where(Student.username == username)).first()
     if not student:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid student credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not verify_password(password, student.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid student credentials",
