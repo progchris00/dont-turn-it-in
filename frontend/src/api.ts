@@ -1,6 +1,6 @@
 import type { Activity, Submission } from "../src/types";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export async function fetchActiveActivities(): Promise<Activity[]> {
   const response = await fetch(`${API_BASE}/api/student/active-activities`);
