@@ -16,6 +16,11 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type Body_submissions_create_student_submission = {
+    activity_id: string;
+    file: (Blob | File);
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -57,6 +62,15 @@ export type PrivateUserCreate = {
     password: string;
     full_name: string;
     is_verified?: boolean;
+};
+
+export type SubmissionResponse = {
+    id: string;
+    studentName: string;
+    activityTitle: string;
+    submittedAt: string;
+    aiflag: (string | null);
+    aiPercent: number;
 };
 
 export type Token = {
@@ -185,6 +199,14 @@ export type PrivateCreateUserData = {
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type SubmissionsGetSubmissionsResponse = (Array<SubmissionResponse>);
+
+export type SubmissionsCreateStudentSubmissionData = {
+    formData: Body_submissions_create_student_submission;
+};
+
+export type SubmissionsCreateStudentSubmissionResponse = (SubmissionResponse);
 
 export type UsersReadUsersData = {
     limit?: number;

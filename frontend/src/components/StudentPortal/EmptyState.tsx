@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
 type EmptyStateProps = {
-  title: string;
-  description: string;
-  buttonLabel?: string;
-  onAction?: () => void;
-};
+  title: string
+  description: string
+  buttonLabel?: string
+  onAction?: () => void
+}
 
 export default function EmptyState({
   title,
@@ -28,5 +28,5 @@ export default function EmptyState({
         </Button>
       ) : null}
     </div>
-  );
+  )
 }

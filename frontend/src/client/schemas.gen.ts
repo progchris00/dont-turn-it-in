@@ -82,6 +82,24 @@ export const Body_login_login_access_tokenSchema = {
     title: 'Body_login-login_access_token'
 } as const;
 
+export const Body_submissions_create_student_submissionSchema = {
+    properties: {
+        activity_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Activity Id'
+        },
+        file: {
+            type: 'string',
+            format: 'binary',
+            title: 'File'
+        }
+    },
+    type: 'object',
+    required: ['activity_id', 'file'],
+    title: 'Body_submissions-create_student_submission'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {
@@ -274,6 +292,47 @@ export const PrivateUserCreateSchema = {
     type: 'object',
     required: ['email', 'password', 'full_name'],
     title: 'PrivateUserCreate'
+} as const;
+
+export const SubmissionResponseSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        studentName: {
+            type: 'string',
+            title: 'Studentname'
+        },
+        activityTitle: {
+            type: 'string',
+            title: 'Activitytitle'
+        },
+        submittedAt: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Submittedat'
+        },
+        aiflag: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Aiflag'
+        },
+        aiPercent: {
+            type: 'number',
+            title: 'Aipercent'
+        }
+    },
+    type: 'object',
+    required: ['id', 'studentName', 'activityTitle', 'submittedAt', 'aiflag', 'aiPercent'],
+    title: 'SubmissionResponse'
 } as const;
 
 export const TokenSchema = {

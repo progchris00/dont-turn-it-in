@@ -1,14 +1,14 @@
-import Navbar from "@/components/Common/Navbar";
-import ActivityTab from "@/components/StudentPortal/ActivityTab";
-import SubmissionTab from "@/components/StudentPortal/SubmissionTab";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useActivities } from "@/hooks/useActivities";
-import { useSubmissions } from "@/hooks/useSubmissions";
+import Navbar from "@/components/Common/Navbar"
+import ActivityTab from "@/components/StudentPortal/ActivityTab"
+import SubmissionTab from "@/components/StudentPortal/SubmissionTab"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useActivities } from "@/hooks/useActivities"
+import { useSubmissions } from "@/hooks/useSubmissions"
 
 export function StudentPortal() {
-  const activities = useActivities();
-  const submissions = useSubmissions();
+  const activities = useActivities()
+  const submissions = useSubmissions()
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -69,7 +69,7 @@ export function StudentPortal() {
         </Tabs>
       </main>
     </div>
-  );
+  )
 }
 
-export default StudentPortal;
+export default StudentPortal

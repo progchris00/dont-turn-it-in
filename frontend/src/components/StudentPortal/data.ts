@@ -1,5 +1,5 @@
-import { ActivitiesService } from "@/client";
-import type { Activity, Submission } from "@/components/StudentPortal/types";
+import { ActivitiesService } from "@/client"
+import type { Activity, Submission } from "@/components/StudentPortal/types"
 
 const pastSubmissions: Submission[] = [
   {
@@ -26,12 +26,12 @@ const pastSubmissions: Submission[] = [
     aiflag: "Needs revision",
     aiPercent: 53,
   },
-];
+]
 
 export const fetchActiveActivities = async (): Promise<Activity[]> => {
-  return ActivitiesService.getActiveActivities() as Promise<Activity[]>;
-};
+  return ActivitiesService.getActiveActivities() as Promise<Activity[]>
+}
 
 export const fetchSubmissions = async (): Promise<Submission[]> => {
-  return pastSubmissions;
-};
+  return pastSubmissions
+}
