@@ -74,12 +74,6 @@ function Home() {
               </span>
             </RouterLink>
           </div>
-          <p className="mt-6 text-sm text-gray-500 flex flex-row gap-1 cursor-pointer">
-            Want to see a quick demo?
-            <span className="text-orange-600 font-medium">
-              Explore as a Guest
-            </span>
-          </p>
         </div>
       </main>
     </div>
