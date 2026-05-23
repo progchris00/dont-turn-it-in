@@ -6,28 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useActivities } from "@/hooks/useActivities";
 import { useSubmissions } from "@/hooks/useSubmissions";
 
-function EmptyState({
-  title,
-  description,
-  buttonLabel,
-}: {
-  title: string;
-  description: string;
-  buttonLabel: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
-        {description}
-      </p>
-      <Button className="mt-6 bg-orange-600 text-white hover:bg-orange-700">
-        {buttonLabel}
-      </Button>
-    </div>
-  );
-}
-
 export function StudentPortal() {
   const activities = useActivities();
   const submissions = useSubmissions();
@@ -89,14 +67,6 @@ export function StudentPortal() {
             />
           </TabsContent>
         </Tabs>
-
-        <div className="mt-10">
-          <EmptyState
-            title="Nothing to submit right now"
-            description="Once the hooks are added, this area can show loading, empty, and error states driven by live data."
-            buttonLabel="Explore Portal"
-          />
-        </div>
       </main>
     </div>
   );
