@@ -49,11 +49,13 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
+    section_id: uuid.UUID | None = Field(default=None, foreign_key="section.id")
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    section: "Section" = Relationship(back_populates="users")
 
 
 # Properties to return via API, id is always required
@@ -106,6 +108,47 @@ class ItemPublic(ItemBase):
 class ItemsPublic(SQLModel):
     data: list[ItemPublic]
     count: int
+
+
+class ActivityBase(SQLModel):
+    activity_title: str = Field(min_length=1, max_length=255)
+    description: str = Field(min_length=1, max_length=1000)
+    deadline: str = Field(min_length=1, max_length=255)
+    is_active: bool = True
+
+
+class Activity(ActivityBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    sections: list["ActivitySection"] = Relationship(back_populates="activity")
+
+
+class Section(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(min_length=1, max_length=255)
+    users: list[User] = Relationship(back_populates="section")
+    activities: list["ActivitySection"] = Relationship(back_populates="section")
+
+
+class ActivitySection(SQLModel, table=True):
+    __tablename__ = "activity_section"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    activity_id: uuid.UUID = Field(foreign_key="activity.id")
+    section_id: uuid.UUID = Field(foreign_key="section.id")
+    is_active: bool = Field(default=True)
+    activity: Activity | None = Relationship(back_populates="sections")
+    section: Section | None = Relationship(back_populates="activities")
+
+
+class ActivityResponse(SQLModel):
+    id: uuid.UUID
+    activityTitle: str
+    description: str
+    deadline: str
 
 
 # Generic message
