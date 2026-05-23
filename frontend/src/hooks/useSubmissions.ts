@@ -1,29 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
-import type { Submission } from "../types";
-import { fetchSubmissions } from "../api";
+import { useQuery } from "@tanstack/react-query"
+import { fetchSubmissions } from "@/components/StudentPortal/data"
+import type { Submission } from "@/components/StudentPortal/types"
 
 export function useSubmissions() {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const query = useQuery<Submission[], Error>({
+    queryKey: ["student-portal", "submissions"],
+    queryFn: fetchSubmissions,
+    staleTime: 5 * 60 * 1000,
+  })
 
-  const loadSubmissions = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchSubmissions();
-      setSubmissions(data);
-    } catch (err) {
-      console.error("Fetch submissions error:", err);
-      setError("Unable to load past submissions. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadSubmissions();
-  }, [loadSubmissions]);
-
-  return { submissions, loading, error, refetch: loadSubmissions };
+  return {
+    submissions: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error?.message ?? null,
+    refetch: query.refetch,
+  }
 }

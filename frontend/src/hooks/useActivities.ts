@@ -1,29 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
-import type { Activity } from "../types";
-import { fetchActiveActivities } from "../api";
+import { useQuery } from "@tanstack/react-query"
+import { fetchActiveActivities } from "@/components/StudentPortal/data"
+import type { Activity } from "@/components/StudentPortal/types"
 
 export function useActivities() {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const query = useQuery<Activity[], Error>({
+    queryKey: ["student-portal", "activities"],
+    queryFn: fetchActiveActivities,
+    staleTime: 5 * 60 * 1000,
+  })
 
-  const loadActivities = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchActiveActivities();
-      setActivities(data);
-    } catch (err) {
-      console.error("Fetch activities error:", err);
-      setError("Unable to load active activities. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadActivities();
-  }, [loadActivities]);
-
-  return { activities, loading, error, refetch: loadActivities };
+  return {
+    activities: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error?.message ?? null,
+    refetch: query.refetch,
+  }
 }
