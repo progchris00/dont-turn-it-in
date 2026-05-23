@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 
 from app.core.db import engine, init_db
 from app.core.security import get_password_hash
-from app.models import Activity, ActivitySection, Section, User
+from app.models import Activity, ActivitySection, Section, Submission, User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -111,6 +111,24 @@ def seed_activities() -> None:
             ]
         )
 
+        session.commit()
+        # Add sample submissions for seeded users
+        # John submits the first activity, Jane submits the fourth
+        submission_1 = Submission(
+            text="John's submission text...",
+            user_id=john.id,
+            activity_id=activities[0].id,
+            prediction="Human",
+            ai_probability=5.0,
+        )
+        submission_2 = Submission(
+            text="Jane's submission text...",
+            user_id=jane.id,
+            activity_id=activities[3].id,
+            prediction="AI",
+            ai_probability=92.3,
+        )
+        session.add_all([submission_1, submission_2])
         session.commit()
         logger.info(
             "Successfully seeded %s activities, 2 sections, and 2 users into the database.",
