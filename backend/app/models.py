@@ -111,6 +111,27 @@ class ItemsPublic(SQLModel):
     count: int
 
 
+class SectionBase(SQLModel):
+    name: str = Field(min_length=1, max_length=255)
+
+
+class SectionCreate(SectionBase):
+    pass
+
+
+class SectionUpdate(SectionBase):
+    name: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore[assignment]
+
+
+class SectionPublic(SectionBase):
+    id: uuid.UUID
+
+
+class SectionsPublic(SQLModel):
+    data: list[SectionPublic]
+    count: int
+
+
 class ActivityBase(SQLModel):
     activity_title: str = Field(min_length=1, max_length=255)
     description: str = Field(min_length=1, max_length=1000)

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ActivitiesGetActiveActivitiesResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, SubmissionsGetSubmissionsResponse, SubmissionsCreateStudentSubmissionData, SubmissionsCreateStudentSubmissionResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { ActivitiesGetActiveActivitiesResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, SectionsReadSectionsData, SectionsReadSectionsResponse, SectionsCreateSectionData, SectionsCreateSectionResponse, SectionsReadSectionData, SectionsReadSectionResponse, SectionsUpdateSectionData, SectionsUpdateSectionResponse, SectionsDeleteSectionData, SectionsDeleteSectionResponse, SubmissionsGetSubmissionsResponse, SubmissionsCreateStudentSubmissionData, SubmissionsCreateStudentSubmissionResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class ActivitiesService {
     /**
@@ -243,6 +243,117 @@ export class PrivateService {
             url: '/api/v1/private/users/',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class SectionsService {
+    /**
+     * Read Sections
+     * Retrieve sections.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns SectionsPublic Successful Response
+     * @throws ApiError
+     */
+    public static readSections(data: SectionsReadSectionsData = {}): CancelablePromise<SectionsReadSectionsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/sections/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Section
+     * Create new section.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns SectionPublic Successful Response
+     * @throws ApiError
+     */
+    public static createSection(data: SectionsCreateSectionData): CancelablePromise<SectionsCreateSectionResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/sections/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Section
+     * Get section by ID.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns SectionPublic Successful Response
+     * @throws ApiError
+     */
+    public static readSection(data: SectionsReadSectionData): CancelablePromise<SectionsReadSectionResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/sections/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Section
+     * Update a section.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns SectionPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateSection(data: SectionsUpdateSectionData): CancelablePromise<SectionsUpdateSectionResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/v1/sections/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Section
+     * Delete a section.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteSection(data: SectionsDeleteSectionData): CancelablePromise<SectionsDeleteSectionResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/sections/{id}',
+            path: {
+                id: data.id
+            },
             errors: {
                 422: 'Validation Error'
             }

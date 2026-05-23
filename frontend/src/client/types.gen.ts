@@ -64,6 +64,24 @@ export type PrivateUserCreate = {
     is_verified?: boolean;
 };
 
+export type SectionCreate = {
+    name: string;
+};
+
+export type SectionPublic = {
+    name: string;
+    id: string;
+};
+
+export type SectionsPublic = {
+    data: Array<SectionPublic>;
+    count: number;
+};
+
+export type SectionUpdate = {
+    name?: (string | null);
+};
+
 export type SubmissionResponse = {
     id: string;
     studentName: string;
@@ -199,6 +217,38 @@ export type PrivateCreateUserData = {
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type SectionsReadSectionsData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type SectionsReadSectionsResponse = (SectionsPublic);
+
+export type SectionsCreateSectionData = {
+    requestBody: SectionCreate;
+};
+
+export type SectionsCreateSectionResponse = (SectionPublic);
+
+export type SectionsReadSectionData = {
+    id: string;
+};
+
+export type SectionsReadSectionResponse = (SectionPublic);
+
+export type SectionsUpdateSectionData = {
+    id: string;
+    requestBody: SectionUpdate;
+};
+
+export type SectionsUpdateSectionResponse = (SectionPublic);
+
+export type SectionsDeleteSectionData = {
+    id: string;
+};
+
+export type SectionsDeleteSectionResponse = (Message);
 
 export type SubmissionsGetSubmissionsResponse = (Array<SubmissionResponse>);
 
