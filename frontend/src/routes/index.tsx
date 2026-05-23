@@ -37,7 +37,7 @@ function Home() {
 
           <div className="grid gap-6 md:grid-cols-2">
             <RouterLink
-              to="/login"
+              to="/student-portal"
               className="flex w-72 flex-col justify-between rounded-lg border border-orange-200 bg-card p-6 text-left transition-shadow hover:shadow-lg"
             >
               <div>
@@ -46,8 +46,8 @@ function Home() {
                 </div>
                 <h2 className="mb-2 text-lg font-semibold">Student</h2>
                 <p className="mb-4 text-sm text-muted-foreground">
-                  Submit assignments, track deadlines, receive feedback, and
-                  view your academic progress dashboard.
+                  Enter the student portal to review activities and past
+                  submissions.
                 </p>
               </div>
               <span className="mt-auto text-sm font-medium text-orange-600">
