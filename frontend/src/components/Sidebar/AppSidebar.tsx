@@ -1,4 +1,4 @@
-import { Briefcase, Home, Layers3, Users } from "lucide-react"
+import { Briefcase, ClipboardList, Home, Layers3, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import { Logo } from "@/components/Common/Logo"
@@ -23,6 +23,7 @@ export function AppSidebar() {
   const items = currentUser?.is_superuser
     ? [
         ...baseItems,
+        { icon: ClipboardList, title: "Activities", path: "/activities" },
         { icon: Layers3, title: "Sections", path: "/sections" },
         { icon: Users, title: "Admin", path: "/admin" },
       ]

@@ -3,9 +3,118 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ActivitiesGetActiveActivitiesResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, SectionsReadSectionsData, SectionsReadSectionsResponse, SectionsCreateSectionData, SectionsCreateSectionResponse, SectionsReadSectionData, SectionsReadSectionResponse, SectionsUpdateSectionData, SectionsUpdateSectionResponse, SectionsDeleteSectionData, SectionsDeleteSectionResponse, SubmissionsGetSubmissionsResponse, SubmissionsCreateStudentSubmissionData, SubmissionsCreateStudentSubmissionResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { ActivitiesReadActivitiesData, ActivitiesReadActivitiesResponse, ActivitiesCreateActivityData, ActivitiesCreateActivityResponse, ActivitiesReadActivityData, ActivitiesReadActivityResponse, ActivitiesUpdateActivityData, ActivitiesUpdateActivityResponse, ActivitiesDeleteActivityData, ActivitiesDeleteActivityResponse, ActivitiesGetActiveActivitiesResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, SectionsReadSectionsData, SectionsReadSectionsResponse, SectionsCreateSectionData, SectionsCreateSectionResponse, SectionsReadSectionData, SectionsReadSectionResponse, SectionsUpdateSectionData, SectionsUpdateSectionResponse, SectionsDeleteSectionData, SectionsDeleteSectionResponse, SubmissionsGetSubmissionsResponse, SubmissionsCreateStudentSubmissionData, SubmissionsCreateStudentSubmissionResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class ActivitiesService {
+    /**
+     * Read Activities
+     * Retrieve activities.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns ActivitiesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readActivities(data: ActivitiesReadActivitiesData = {}): CancelablePromise<ActivitiesReadActivitiesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/activities/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Activity
+     * Create new activity.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ActivityPublic Successful Response
+     * @throws ApiError
+     */
+    public static createActivity(data: ActivitiesCreateActivityData): CancelablePromise<ActivitiesCreateActivityResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/activities/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Activity
+     * Get activity by ID.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns ActivityPublic Successful Response
+     * @throws ApiError
+     */
+    public static readActivity(data: ActivitiesReadActivityData): CancelablePromise<ActivitiesReadActivityResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/activities/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Activity
+     * Update an activity.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns ActivityPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateActivity(data: ActivitiesUpdateActivityData): CancelablePromise<ActivitiesUpdateActivityResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/v1/activities/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Activity
+     * Delete an activity.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteActivity(data: ActivitiesDeleteActivityData): CancelablePromise<ActivitiesDeleteActivityResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/activities/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
     /**
      * Get Active Activities
      * Fetch all active activities for the current user's section.

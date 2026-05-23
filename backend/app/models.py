@@ -139,6 +139,29 @@ class ActivityBase(SQLModel):
     is_active: bool = True
 
 
+class ActivityCreate(ActivityBase):
+    pass
+
+
+class ActivityUpdate(ActivityBase):
+    activity_title: str | None = Field(
+        default=None, min_length=1, max_length=255
+    )  # type: ignore[assignment]
+    description: str | None = Field(default=None, min_length=1, max_length=1000)  # type: ignore[assignment]
+    deadline: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore[assignment]
+    is_active: bool | None = None
+
+
+class ActivityPublic(ActivityBase):
+    id: uuid.UUID
+    created_at: datetime | None = None
+
+
+class ActivitiesPublic(SQLModel):
+    data: list[ActivityPublic]
+    count: int
+
+
 class Activity(ActivityBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     created_at: datetime | None = Field(

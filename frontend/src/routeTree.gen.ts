@@ -20,6 +20,7 @@ import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutSectionsRouteImport } from './routes/_layout/sections'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as LayoutActivitiesRouteImport } from './routes/_layout/activities'
 
 const StudentPortalRoute = StudentPortalRouteImport.update({
   id: '/student-portal',
@@ -75,6 +76,11 @@ const LayoutAdminRoute = LayoutAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutActivitiesRoute = LayoutActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/student-portal': typeof StudentPortalRoute
+  '/activities': typeof LayoutActivitiesRoute
   '/admin': typeof LayoutAdminRoute
   '/items': typeof LayoutItemsRoute
   '/sections': typeof LayoutSectionsRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/student-portal': typeof StudentPortalRoute
+  '/activities': typeof LayoutActivitiesRoute
   '/admin': typeof LayoutAdminRoute
   '/items': typeof LayoutItemsRoute
   '/sections': typeof LayoutSectionsRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/student-portal': typeof StudentPortalRoute
+  '/_layout/activities': typeof LayoutActivitiesRoute
   '/_layout/admin': typeof LayoutAdminRoute
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/sections': typeof LayoutSectionsRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/student-portal'
+    | '/activities'
     | '/admin'
     | '/items'
     | '/sections'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/student-portal'
+    | '/activities'
     | '/admin'
     | '/items'
     | '/sections'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/student-portal'
+    | '/_layout/activities'
     | '/_layout/admin'
     | '/_layout/items'
     | '/_layout/sections'
@@ -243,10 +255,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/activities': {
+      id: '/_layout/activities'
+      path: '/activities'
+      fullPath: '/activities'
+      preLoaderRoute: typeof LayoutActivitiesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
 interface LayoutRouteChildren {
+  LayoutActivitiesRoute: typeof LayoutActivitiesRoute
   LayoutAdminRoute: typeof LayoutAdminRoute
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSectionsRoute: typeof LayoutSectionsRoute
@@ -254,6 +274,7 @@ interface LayoutRouteChildren {
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutActivitiesRoute: LayoutActivitiesRoute,
   LayoutAdminRoute: LayoutAdminRoute,
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutSectionsRoute: LayoutSectionsRoute,
