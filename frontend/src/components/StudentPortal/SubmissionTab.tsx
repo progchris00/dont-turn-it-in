@@ -1,19 +1,18 @@
-import { Button } from "@/components/ui/button";
-
-import type { Submission } from "@/components/StudentPortal/types";
+import type { Submission } from "@/components/StudentPortal/types"
+import { Button } from "@/components/ui/button"
 
 interface SubmissionTabProps {
-  submissions: Submission[];
-  loading: boolean;
-  error: string | null;
-  onRetry: () => void;
+  submissions: Submission[]
+  loading: boolean
+  error: string | null
+  onRetry: () => void
 }
 
 const getAiPercentColor = (percent: number) => {
-  if (percent >= 70) return "bg-red-600";
-  if (percent >= 40) return "bg-yellow-500";
-  return "bg-green-600";
-};
+  if (percent >= 70) return "bg-red-600"
+  if (percent >= 40) return "bg-yellow-500"
+  return "bg-green-600"
+}
 
 export function SubmissionTab({
   submissions,
@@ -26,7 +25,7 @@ export function SubmissionTab({
       <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
         <p className="text-sm text-muted-foreground">Loading submissions...</p>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -40,7 +39,7 @@ export function SubmissionTab({
           Retry
         </Button>
       </div>
-    );
+    )
   }
 
   if (submissions.length === 0) {
@@ -50,7 +49,7 @@ export function SubmissionTab({
           You haven't submitted any activities yet.
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -105,7 +104,7 @@ export function SubmissionTab({
         </div>
       ))}
     </div>
-  );
+  )
 }
 
-export default SubmissionTab;
+export default SubmissionTab

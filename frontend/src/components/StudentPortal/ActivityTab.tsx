@@ -1,15 +1,14 @@
-import { Button } from "@/components/ui/button";
-
-import SubmitActivity from "@/components/StudentPortal/Buttons/SubmitActivity";
-import type { Activity } from "@/components/StudentPortal/types";
+import SubmitActivity from "@/components/StudentPortal/Buttons/SubmitActivity"
+import type { Activity } from "@/components/StudentPortal/types"
+import { Button } from "@/components/ui/button"
 
 interface ActivityTabProps {
-  activities: Activity[];
-  loading: boolean;
-  error: string | null;
-  onRetry: () => void;
-  onSubmit: (activityId: string | number) => void;
-  submittingId: string | number | null;
+  activities: Activity[]
+  loading: boolean
+  error: string | null
+  onRetry: () => void
+  onSubmit: (activityId: string | number) => void
+  submittingId: string | number | null
 }
 
 export function ActivityTab({
@@ -25,7 +24,7 @@ export function ActivityTab({
       <div className="w-full rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
         <p className="text-sm text-muted-foreground">Loading activities...</p>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -39,7 +38,7 @@ export function ActivityTab({
           Retry
         </Button>
       </div>
-    );
+    )
   }
 
   if (activities.length === 0) {
@@ -49,7 +48,7 @@ export function ActivityTab({
           No active activities at the moment.
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -89,7 +88,7 @@ export function ActivityTab({
         Complete all active activities before the due date.
       </div>
     </div>
-  );
+  )
 }
 
-export default ActivityTab;
+export default ActivityTab

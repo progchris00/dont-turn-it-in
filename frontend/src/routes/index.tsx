@@ -1,7 +1,7 @@
-import { Link as RouterLink, createFileRoute } from "@tanstack/react-router";
-import { GraduationCap, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { createFileRoute, Link as RouterLink } from "@tanstack/react-router"
+import { GraduationCap, LayoutDashboard, ShieldCheck } from "lucide-react"
 
-import { Navbar } from "@/components/Common/Navbar";
+import { Navbar } from "@/components/Common/Navbar"
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-});
+})
 
 function Home() {
   return (
@@ -77,5 +77,5 @@ function Home() {
         </div>
       </main>
     </div>
-  );
+  )
 }

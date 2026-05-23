@@ -1,8 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Common/Navbar";
 import ActivityTab from "@/components/StudentPortal/ActivityTab";
 import SubmissionTab from "@/components/StudentPortal/SubmissionTab";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useActivities } from "@/hooks/useActivities";
 import { useSubmissions } from "@/hooks/useSubmissions";
 
@@ -53,7 +53,9 @@ export function StudentPortal() {
                   Review the tasks that are currently available to you.
                 </p>
               </div>
-              <Button variant="outline">Refresh</Button>
+              <Button variant="outline" onClick={() => activities.refetch()}>
+                Refresh
+              </Button>
             </div>
 
             <ActivityTab

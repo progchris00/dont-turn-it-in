@@ -1,10 +1,10 @@
-import { Send } from "lucide-react";
+import { Send } from "lucide-react"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
 interface SubmitActivityProps {
-  onClick: () => void;
-  disabled?: boolean;
+  onClick: () => void
+  disabled?: boolean
 }
 
 export function SubmitActivity({
@@ -21,7 +21,7 @@ export function SubmitActivity({
       <Send className="size-4" />
       {disabled ? "Submitting..." : "Submit Activity"}
     </Button>
-  );
+  )
 }
 
-export default SubmitActivity;
+export default SubmitActivity

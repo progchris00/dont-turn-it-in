@@ -1,8 +1,8 @@
-import { Link as RouterLink } from "@tanstack/react-router";
-import { LogOut, Menu } from "lucide-react";
+import { Link as RouterLink } from "@tanstack/react-router"
+import { LogOut, Menu } from "lucide-react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,24 +10,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
-import { getInitials } from "@/utils";
+} from "@/components/ui/dropdown-menu"
+import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+import { getInitials } from "@/utils"
 
 const navItems = [
   { label: "Features", href: "#features" },
   { label: "How it Works", href: "#how-it-works" },
   { label: "Pricing", href: "#pricing" },
   { label: "Testimonials", href: "#testimonials" },
-];
+]
 
 export function Navbar() {
-  const { logout, user } = useAuth();
-  const isAuthenticated = isLoggedIn();
-  const userLabel = user?.full_name || user?.email || "Signed in user";
+  const { logout, user } = useAuth()
+  const isAuthenticated = isLoggedIn()
+  const userLabel = user?.full_name || user?.email || "Signed in user"
   const userInitial = user?.full_name?.trim()
     ? getInitials(user.full_name)
-    : (user?.email?.trim().charAt(0) ?? "?");
+    : (user?.email?.trim().charAt(0) ?? "?")
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
@@ -98,7 +98,7 @@ export function Navbar() {
         </Button>
       </div>
     </header>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar
