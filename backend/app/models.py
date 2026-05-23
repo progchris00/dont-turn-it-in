@@ -56,6 +56,7 @@ class User(UserBase, table=True):
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     section: "Section" = Relationship(back_populates="users")
+    submissions: list["Submission"] = Relationship(back_populates="user")
 
 
 # Properties to return via API, id is always required
@@ -124,6 +125,7 @@ class Activity(ActivityBase, table=True):
         sa_type=DateTime(timezone=True),  # type: ignore
     )
     sections: list["ActivitySection"] = Relationship(back_populates="activity")
+    submissions: list["Submission"] = Relationship(back_populates="activity")
 
 
 class Section(SQLModel, table=True):
@@ -149,6 +151,20 @@ class ActivityResponse(SQLModel):
     activityTitle: str
     description: str
     deadline: str
+
+
+class Submission(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    text: str
+    user_id: uuid.UUID | None = Field(default=None, foreign_key="user.id")
+    activity_id: uuid.UUID | None = Field(default=None, foreign_key="activity.id")
+    submitted_at: datetime = Field(default_factory=get_datetime_utc, sa_type=DateTime(timezone=True))  # type: ignore
+    aiflag: str | None = None
+    prediction: str = ""
+    ai_probability: float = 0.0
+
+    user: User | None = Relationship(back_populates="submissions")
+    activity: Activity | None = Relationship(back_populates="submissions")
 
 
 # Generic message
