@@ -3,57 +3,8 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Common/Navbar";
 import ActivityTab from "@/components/StudentPortal/ActivityTab";
 import SubmissionTab from "@/components/StudentPortal/SubmissionTab";
-import type { Activity, Submission } from "@/components/StudentPortal/types";
-
-const activityPreview: Activity[] = [
-  {
-    id: 1,
-    activityTitle: "Essay Draft Review",
-    description:
-      "Upload your draft for a quick AI-assisted review before the deadline.",
-    deadline: "today at 5:00 PM",
-  },
-  {
-    id: 2,
-    activityTitle: "Reading Reflection",
-    description: "Reflect on this week’s reading and submit your response.",
-    deadline: "tomorrow at 11:59 PM",
-  },
-  {
-    id: 3,
-    activityTitle: "Project Check-in",
-    description:
-      "Share your current progress and blockers with your instructor.",
-    deadline: "Friday",
-  },
-];
-
-const submissionPreview: Submission[] = [
-  {
-    id: 1,
-    activityTitle: "Essay Draft Review",
-    studentName: "Alex Johnson",
-    submittedAt: "Submitted 2 hours ago",
-    aiflag: "AI flagged",
-    aiPercent: 82,
-  },
-  {
-    id: 2,
-    activityTitle: "Reading Reflection",
-    studentName: "Alex Johnson",
-    submittedAt: "Submitted yesterday",
-    aiflag: "Human reviewed",
-    aiPercent: 24,
-  },
-  {
-    id: 3,
-    activityTitle: "Weekly Quiz",
-    studentName: "Alex Johnson",
-    submittedAt: "Submitted last week",
-    aiflag: "Needs revision",
-    aiPercent: 53,
-  },
-];
+import { useActivities } from "@/hooks/useActivities";
+import { useSubmissions } from "@/hooks/useSubmissions";
 
 function EmptyState({
   title,
@@ -78,6 +29,9 @@ function EmptyState({
 }
 
 export function StudentPortal() {
+  const activities = useActivities();
+  const submissions = useSubmissions();
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
@@ -103,10 +57,10 @@ export function StudentPortal() {
             </div>
 
             <ActivityTab
-              activities={activityPreview}
-              loading={false}
-              error={null}
-              onRetry={() => undefined}
+              activities={activities.activities}
+              loading={activities.loading}
+              error={activities.error}
+              onRetry={activities.refetch}
               onSubmit={() => undefined}
               submittingId={null}
             />
@@ -126,10 +80,10 @@ export function StudentPortal() {
             </div>
 
             <SubmissionTab
-              submissions={submissionPreview}
-              loading={false}
-              error={null}
-              onRetry={() => undefined}
+              submissions={submissions.submissions}
+              loading={submissions.loading}
+              error={submissions.error}
+              onRetry={submissions.refetch}
             />
           </TabsContent>
         </Tabs>
