@@ -107,7 +107,12 @@ const EditActivity = ({ activity, onSuccess }: EditActivityProps) => {
                       Title <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Activity title" type="text" {...field} required />
+                      <Input
+                        placeholder="Activity title"
+                        type="text"
+                        {...field}
+                        required
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,7 +128,12 @@ const EditActivity = ({ activity, onSuccess }: EditActivityProps) => {
                       Description <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Description" type="text" {...field} required />
+                      <Input
+                        placeholder="Description"
+                        type="text"
+                        {...field}
+                        required
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +164,9 @@ const EditActivity = ({ activity, onSuccess }: EditActivityProps) => {
                     <FormControl>
                       <input
                         checked={field.value}
-                        onChange={(event) => field.onChange(event.target.checked)}
+                        onChange={(event) =>
+                          field.onChange(event.target.checked)
+                        }
                         type="checkbox"
                         className="size-4 rounded border border-input"
                       />

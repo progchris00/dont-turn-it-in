@@ -9,6 +9,7 @@ from app.api.routes import (
     submissions,
     users,
     utils,
+    admin_analytics,
 )
 from app.core.config import settings
 
@@ -20,7 +21,8 @@ api_router.include_router(items.router)
 api_router.include_router(sections.router)
 api_router.include_router(activities.router)
 api_router.include_router(submissions.router)
-
+api_router.include_router(admin_analytics.router)
 
 if settings.ENVIRONMENT == "local":
     api_router.include_router(private.router)
+

@@ -1,15 +1,13 @@
 import { useState } from "react"
 
 import { ClassAITrendChart } from "./ClassAITrendChart"
+import type { PerformanceStudent } from "./dashboardData"
+import { RISK_BG } from "./dashboardData"
 import { RiskDistributionChart } from "./RiskDistributionChart"
 import { StudentForecastChart } from "./StudentForecastChart"
-import {
-  MOCK_CLASS_TREND,
-  MOCK_PERFORMANCE_STUDENTS,
-  MOCK_RISK_BUCKETS,
-  RISK_BG,
-} from "./dashboardData"
-import type { PerformanceStudent } from "./dashboardData"
+import type { StudentPerformanceDashboardApiProps } from "./StudentPerformanceDashboardApi"
+
+const MOCK_PERFORMANCE_STUDENTS: PerformanceStudent[] = []
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -33,9 +31,7 @@ function Card({
         <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
           {title}
         </h2>
-        {subtitle && (
-          <p className="mt-0.5 text-xs text-gray-400">{subtitle}</p>
-        )}
+        {subtitle && <p className="mt-0.5 text-xs text-gray-400">{subtitle}</p>}
       </header>
       <div className="p-5">{children}</div>
     </section>
@@ -68,7 +64,9 @@ function StudentTableRow({ student, isSelected, onSelect }: StudentRowProps) {
       </td>
 
       <td className="px-3 py-3">
-        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${riskCls}`}>
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${riskCls}`}
+        >
           {student.riskLevel}
         </span>
       </td>
@@ -111,26 +109,29 @@ function StudentTableRow({ student, isSelected, onSelect }: StudentRowProps) {
  *
  * Replace MOCK_* constants with API calls when backend is ready.
  */
-export function StudentPerformanceDashboard() {
+export function StudentPerformanceDashboard({
+  classTrend,
+  aiDistribution,
+  students,
+}: StudentPerformanceDashboardApiProps) {
+  // kept for future table/forecast wiring
+  void students
   const [selectedStudent, setSelectedStudent] =
     useState<PerformanceStudent | null>(null)
 
   function handleSelect(student: PerformanceStudent) {
     // Deselect if same row clicked again
-    setSelectedStudent((prev) =>
-      prev?.id === student.id ? null : student
-    )
+    setSelectedStudent((prev) => (prev?.id === student.id ? null : student))
   }
 
   return (
     <div className="flex flex-col gap-5">
-
       {/* ── Section 1: Class-wide AI trend ── */}
       <Card
         title="Class AI Usage Trend"
         subtitle="Average AI % across all students — weekly"
       >
-        <ClassAITrendChart data={MOCK_CLASS_TREND} />
+        <ClassAITrendChart data={classTrend} />
       </Card>
 
       {/* ── Section 2: Risk level distribution ── */}
@@ -143,14 +144,13 @@ export function StudentPerformanceDashboard() {
         }
       >
         <RiskDistributionChart
-          data={MOCK_RISK_BUCKETS}
+          data={aiDistribution}
           highlightLabel={selectedStudent?.riskLevel}
         />
       </Card>
 
       {/* ── Section 3: Table + dynamic forecast ── */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_480px]">
-
         {/* 3a — Student table */}
         <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
           <header className="border-b border-gray-100 px-5 py-4">
@@ -238,7 +238,6 @@ export function StudentPerformanceDashboard() {
             )}
           </div>
         </section>
-
       </div>
     </div>
   )

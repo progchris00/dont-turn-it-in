@@ -5,9 +5,9 @@ import { Suspense } from "react"
 
 import { SectionsService, UsersService } from "@/client"
 import { DataTable } from "@/components/Common/DataTable"
+import PendingSections from "@/components/Pending/PendingSections"
 import AddSection from "@/components/Sections/AddSection"
 import { columns } from "@/components/Sections/columns"
-import PendingSections from "@/components/Pending/PendingSections"
 
 function getSectionsQueryOptions() {
   return {
@@ -44,8 +44,12 @@ function SectionsTableContent() {
         <div className="rounded-full bg-muted p-4 mb-4">
           <Layers3 className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold">You don't have any sections yet</h3>
-        <p className="text-muted-foreground">Add a new section to get started</p>
+        <h3 className="text-lg font-semibold">
+          You don't have any sections yet
+        </h3>
+        <p className="text-muted-foreground">
+          Add a new section to get started
+        </p>
       </div>
     )
   }

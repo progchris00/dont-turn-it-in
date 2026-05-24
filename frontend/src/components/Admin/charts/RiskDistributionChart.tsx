@@ -65,14 +65,20 @@ export function RiskDistributionChart({
         return (
           <g key={t}>
             <line
-              x1={PAD.left} y1={y}
-              x2={PAD.left + CW} y2={y}
-              stroke="#f3f4f6" strokeWidth="1"
+              x1={PAD.left}
+              y1={y}
+              x2={PAD.left + CW}
+              y2={y}
+              stroke="#f3f4f6"
+              strokeWidth="1"
             />
             <text
-              x={PAD.left - 8} y={y}
-              dominantBaseline="middle" textAnchor="end"
-              fontSize="10" fill="#9ca3af"
+              x={PAD.left - 8}
+              y={y}
+              dominantBaseline="middle"
+              textAnchor="end"
+              fontSize="10"
+              fill="#9ca3af"
             >
               {t}
             </text>
@@ -82,8 +88,11 @@ export function RiskDistributionChart({
 
       {/* Y-axis label */}
       <text
-        x={12} y={PAD.top + CH / 2}
-        textAnchor="middle" fontSize="10" fill="#6b7280"
+        x={12}
+        y={PAD.top + CH / 2}
+        textAnchor="middle"
+        fontSize="10"
+        fill="#6b7280"
         transform={`rotate(-90,12,${PAD.top + CH / 2})`}
       >
         Students
@@ -91,28 +100,36 @@ export function RiskDistributionChart({
 
       {/* Bars */}
       {data.map((d, i) => {
-        const cx    = PAD.left + i * slotW + slotW / 2
-        const bx    = cx - barW / 2
-        const bh    = (d.count / max) * CH
-        const by    = PAD.top + CH - bh
-        const dim   = isHighlighting && d.label !== highlightLabel
+        const cx = PAD.left + i * slotW + slotW / 2
+        const bx = cx - barW / 2
+        const bh = (d.count / max) * CH
+        const by = PAD.top + CH - bh
+        const dim = isHighlighting && d.label !== highlightLabel
         const opacity = dim ? 0.25 : 1
 
         return (
           <g key={d.label}>
             {/* Bar */}
             <rect
-              x={bx.toFixed(1)} y={by.toFixed(1)}
-              width={barW.toFixed(1)} height={Math.max(bh, 0).toFixed(1)}
-              fill={d.color} rx="4" opacity={opacity}
+              x={bx.toFixed(1)}
+              y={by.toFixed(1)}
+              width={barW.toFixed(1)}
+              height={Math.max(bh, 0).toFixed(1)}
+              fill={d.color}
+              rx="4"
+              opacity={opacity}
               style={{ transition: "opacity 0.2s ease" }}
             />
 
             {/* Count above bar */}
             <text
-              x={cx} y={(by - 6).toFixed(1)}
-              textAnchor="middle" fontSize="11" fontWeight="700"
-              fill={d.color} opacity={opacity}
+              x={cx}
+              y={(by - 6).toFixed(1)}
+              textAnchor="middle"
+              fontSize="11"
+              fontWeight="700"
+              fill={d.color}
+              opacity={opacity}
             >
               {d.count}
             </text>
@@ -121,8 +138,11 @@ export function RiskDistributionChart({
             {d.label.split(" ").map((word, wi) => (
               <text
                 key={wi}
-                x={cx} y={(PAD.top + CH + 14 + wi * 13).toFixed(1)}
-                textAnchor="middle" fontSize="10" fill="#6b7280"
+                x={cx}
+                y={(PAD.top + CH + 14 + wi * 13).toFixed(1)}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#6b7280"
                 opacity={opacity}
               >
                 {word}
@@ -134,9 +154,12 @@ export function RiskDistributionChart({
 
       {/* Baseline */}
       <line
-        x1={PAD.left} y1={PAD.top + CH}
-        x2={PAD.left + CW} y2={PAD.top + CH}
-        stroke="#e5e7eb" strokeWidth="1"
+        x1={PAD.left}
+        y1={PAD.top + CH}
+        x2={PAD.left + CW}
+        y2={PAD.top + CH}
+        stroke="#e5e7eb"
+        strokeWidth="1"
       />
     </svg>
   )

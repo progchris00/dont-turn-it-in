@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import type { PerformanceStudent } from "./dashboardData"
+
 import { RISK_COLORS } from "./dashboardData"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -24,10 +25,17 @@ const Y_TICKS = [0, 25, 50, 75, 100]
 const toX = (i: number, len: number) => PAD.left + (i / (len - 1)) * CW
 const toY = (v: number) => PAD.top + (1 - v / Y_MAX) * CH
 
-function historicalPath(pts: PerformanceStudent["forecastData"]): string {
+type ForecastLikePoint = { aiPercent: number; isForecast: boolean }
+
+type ForecastLike = {
+  forecastData: ForecastLikePoint[]
+  points: ForecastLikePoint[]
+}
+
+function historicalPath(pts: ForecastLikePoint[]): string {
   return pts
     .filter((p) => !p.isForecast)
-    .map((p, i, hist) => {
+    .map((p, i) => {
       const gi = pts.indexOf(p)
       return `${i === 0 ? "M" : "L"}${toX(gi, pts.length).toFixed(1)},${toY(p.aiPercent).toFixed(1)}`
     })
@@ -50,8 +58,9 @@ function areaPath(pts: PerformanceStudent["forecastData"]): string {
   const hist = pts.filter((p) => !p.isForecast)
   if (!hist.length) return ""
   const line = hist
-    .map((p, i) =>
-      `${i === 0 ? "M" : "L"}${toX(pts.indexOf(p), pts.length).toFixed(1)},${toY(p.aiPercent).toFixed(1)}`
+    .map(
+      (p, i) =>
+        `${i === 0 ? "M" : "L"}${toX(pts.indexOf(p), pts.length).toFixed(1)},${toY(p.aiPercent).toFixed(1)}`,
     )
     .join(" ")
   const xN = toX(pts.indexOf(hist[hist.length - 1]), pts.length).toFixed(1)
@@ -113,7 +122,8 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
 
   if (!student) return <EmptyState />
 
-  const pts = student.forecastData
+  const pts = (student as any).points ?? (student as any).forecastData
+
   const color = RISK_COLORS[student.riskLevel]
   const splitIdx = pts.findIndex((p) => p.isForecast)
   const splitX = splitIdx > 0 ? toX(splitIdx, pts.length).toFixed(1) : null
@@ -130,8 +140,14 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
         className="w-full"
       >
         <defs>
-          <linearGradient id={`sfg-area-${student.id}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor={color} stopOpacity="0.15" />
+          <linearGradient
+            id={`sfg-area-${student.id}`}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop offset="0%" stopColor={color} stopOpacity="0.15" />
             <stop offset="100%" stopColor={color} stopOpacity="0.01" />
           </linearGradient>
         </defs>
@@ -142,14 +158,20 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
           return (
             <g key={t}>
               <line
-                x1={PAD.left} y1={y}
-                x2={PAD.left + CW} y2={y}
-                stroke="#f3f4f6" strokeWidth="1"
+                x1={PAD.left}
+                y1={y}
+                x2={PAD.left + CW}
+                y2={y}
+                stroke="#f3f4f6"
+                strokeWidth="1"
               />
               <text
-                x={PAD.left - 8} y={y}
-                dominantBaseline="middle" textAnchor="end"
-                fontSize="10" fill="#9ca3af"
+                x={PAD.left - 8}
+                y={y}
+                dominantBaseline="middle"
+                textAnchor="end"
+                fontSize="10"
+                fill="#9ca3af"
               >
                 {t}%
               </text>
@@ -160,12 +182,14 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
         {/* X labels */}
         {pts.map((p, i) => (
           <text
-            key={`${p.week}-${i}`}
-            x={toX(i, pts.length)} y={PAD.top + CH + 18}
-            textAnchor="middle" fontSize="10"
+            key={p.isForecast ? `forecast-label-${i}` : `hist-label-${i}`}
+            x={toX(i, pts.length)}
+            y={PAD.top + CH + 18}
+            textAnchor="middle"
+            fontSize="10"
             fill={p.isForecast ? "#d1d5db" : "#9ca3af"}
           >
-            {p.week}
+            {p.isForecast ? "Next" : i + 1}
           </text>
         ))}
 
@@ -175,17 +199,23 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
         {/* Forecast divider */}
         {splitX && (
           <line
-            x1={splitX} y1={PAD.top}
-            x2={splitX} y2={PAD.top + CH}
-            stroke="#e5e7eb" strokeWidth="1" strokeDasharray="4 3"
+            x1={splitX}
+            y1={PAD.top}
+            x2={splitX}
+            y2={PAD.top + CH}
+            stroke="#e5e7eb"
+            strokeWidth="1"
+            strokeDasharray="4 3"
           />
         )}
 
         {/* Forecast label */}
         {splitX && (
           <text
-            x={Number(splitX) + 6} y={PAD.top + 10}
-            fontSize="9" fill="#9ca3af"
+            x={Number(splitX) + 6}
+            y={PAD.top + 10}
+            fontSize="9"
+            fill="#9ca3af"
           >
             Forecast →
           </text>
@@ -194,36 +224,48 @@ export function StudentForecastChart({ student }: StudentForecastChartProps) {
         {/* Historical line (solid) */}
         <path
           d={historicalPath(pts)}
-          fill="none" stroke={color} strokeWidth="2.5"
-          strokeLinejoin="round" strokeLinecap="round"
+          fill="none"
+          stroke={color}
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
         />
 
         {/* Forecast line (dashed) */}
         <path
           d={forecastPath(pts)}
-          fill="none" stroke={color} strokeWidth="2"
-          strokeDasharray="5 3" strokeLinejoin="round"
-          strokeLinecap="round" strokeOpacity="0.6"
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeDasharray="5 3"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          strokeOpacity="0.6"
         />
 
         {/* Data points */}
         {pts.map((p, i) => (
           <circle
-            key={`pt-${i}`}
-            cx={toX(i, pts.length)} cy={toY(p.aiPercent)}
+            key={p.isForecast ? `forecast-${i}` : `hist-${i}`}
+            cx={toX(i, pts.length)}
+            cy={toY(p.aiPercent)}
             r={p.isForecast ? 3 : 4}
             fill={p.isForecast ? color : "#fff"}
-            stroke={color} strokeWidth="2"
+            stroke={color}
+            strokeWidth="2"
             strokeOpacity={p.isForecast ? 0.5 : 1}
           >
-            <title>{`${p.week}: ${p.aiPercent}%${p.isForecast ? " (forecast)" : ""}`}</title>
+            <title>{`${p.isForecast ? "Next" : i + 1}: ${p.aiPercent}%${p.isForecast ? " (forecast)" : ""}`}</title>
           </circle>
         ))}
 
         {/* Y-axis label */}
         <text
-          x={12} y={PAD.top + CH / 2}
-          textAnchor="middle" fontSize="10" fill="#6b7280"
+          x={12}
+          y={PAD.top + CH / 2}
+          textAnchor="middle"
+          fontSize="10"
+          fill="#6b7280"
           transform={`rotate(-90,12,${PAD.top + CH / 2})`}
         >
           AI %
