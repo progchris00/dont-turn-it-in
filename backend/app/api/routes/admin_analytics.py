@@ -22,20 +22,30 @@ from app.services.forecast_service import (
 router = APIRouter(prefix="/admin/analytics", tags=["admin-analytics"])
 
 
-def _require_section(current_user: CurrentUser) -> str:
-    if current_user.section_id is None:
-        raise HTTPException(status_code=403, detail="User is not assigned to a section")
-    return str(current_user.section_id)
+def _require_section(current_user: CurrentUser) -> str | None:
+    """Return section_id if assigned, or None if superuser without section."""
+    if current_user.section_id is not None:
+        return str(current_user.section_id)
+    if current_user.is_superuser:
+        return None  # Superuser can access all sections
+    raise HTTPException(status_code=403, detail="User is not assigned to a section")
 
 
-def _get_section_users(session: SessionDep, section_id: str) -> list[User]:
-    # Dashboard expectations (and existing tests): include admin/superuser if assigned to the section.
-    return session.exec(
-        select(User).where(
-            User.section_id == section_id,
-            User.is_active.is_(True),
-        )
-    ).all()
+def _get_section_users(session: SessionDep, section_id: str | None) -> list[User]:
+    """Get active users, optionally filtered by section."""
+    if section_id is None:
+        # Superuser: all active users
+        return session.exec(
+            select(User).where(User.is_active.is_(True))
+        ).all()
+    else:
+        # Regular user: only users in their section
+        return session.exec(
+            select(User).where(
+                User.section_id == section_id,
+                User.is_active.is_(True),
+            )
+        ).all()
 
 
 
@@ -43,13 +53,18 @@ def _get_section_users(session: SessionDep, section_id: str) -> list[User]:
 
 
 
-def _get_section_submissions(session: SessionDep, section_id: str) -> list[Submission]:
-    # submissions for users in section
-    return session.exec(
-        select(Submission)
-        .join(User, Submission.user_id == User.id)
-        .where(User.section_id == section_id)
-    ).all()
+def _get_section_submissions(session: SessionDep, section_id: str | None) -> list[Submission]:
+    """Get submissions, optionally filtered by section."""
+    if section_id is None:
+        # Superuser: all submissions
+        return session.exec(select(Submission)).all()
+    else:
+        # Regular user: submissions from their section
+        return session.exec(
+            select(Submission)
+            .join(User, Submission.user_id == User.id)
+            .where(User.section_id == section_id)
+        ).all()
 
 
 
@@ -124,27 +139,43 @@ def ai_distribution(session: SessionDep, current_user: CurrentUser):
 def class_trend(session: SessionDep, current_user: CurrentUser):
     section_id = _require_section(current_user)
 
-    # Determine active activities in this section, ordered chronologically.
-    activities = session.exec(
-        select(Activity)
-        .join(ActivitySection, ActivitySection.activity_id == Activity.id)
-        .where(
-            ActivitySection.section_id == section_id,
-            Activity.is_active.is_(True),
-            ActivitySection.is_active.is_(True),
-        )
-        .order_by(col(Activity.created_at).asc())
-    ).all()
+    # Determine active activities in this section (or all if superuser), ordered chronologically.
+    if section_id is None:
+        # Superuser: all active activities
+        activities = session.exec(
+            select(Activity)
+            .where(Activity.is_active.is_(True))
+            .order_by(col(Activity.created_at).asc())
+        ).all()
+    else:
+        # Regular user: activities in their section
+        activities = session.exec(
+            select(Activity)
+            .join(ActivitySection, ActivitySection.activity_id == Activity.id)
+            .where(
+                ActivitySection.section_id == section_id,
+                Activity.is_active.is_(True),
+                ActivitySection.is_active.is_(True),
+            )
+            .order_by(col(Activity.created_at).asc())
+        ).all()
 
     # For each activity, compute average ai_probability across submissions by section users.
     activity_series: list[tuple[str, float]] = []
     for a in activities:
-        submissions = session.exec(
-            select(Submission).join(User, Submission.user_id == User.id).where(
-                Submission.activity_id == a.id,
-                User.section_id == section_id,
-            )
-        ).all()
+        if section_id is None:
+            # Superuser: all submissions for activity
+            submissions = session.exec(
+                select(Submission).where(Submission.activity_id == a.id)
+            ).all()
+        else:
+            # Regular user: only submissions from their section
+            submissions = session.exec(
+                select(Submission).join(User, Submission.user_id == User.id).where(
+                    Submission.activity_id == a.id,
+                    User.section_id == section_id,
+                )
+            ).all()
         if not submissions:
             avg_ai = 0.0
         else:
@@ -163,32 +194,49 @@ def student_forecast_line(session: SessionDep, current_user: CurrentUser):
 
     users = _get_section_users(session, section_id)
 
-    upcoming = session.exec(
-        select(Activity)
-        .join(ActivitySection, ActivitySection.activity_id == Activity.id)
-        .where(
-            ActivitySection.section_id == section_id,
-            Activity.is_active.is_(True),
-            ActivitySection.is_active.is_(True),
-        )
-        .order_by(col(Activity.created_at).desc())
-        .limit(1)
-    ).first()
+    if section_id is None:
+        # Superuser: get most recent activity across all
+        upcoming = session.exec(
+            select(Activity)
+            .where(Activity.is_active.is_(True))
+            .order_by(col(Activity.created_at).desc())
+            .limit(1)
+        ).first()
+
+        # Determine ordered past activities (excluding the upcoming one) to create historical points.
+        past_activities = session.exec(
+            select(Activity)
+            .where(Activity.is_active.is_(True))
+            .order_by(col(Activity.created_at).asc())
+        ).all()
+    else:
+        # Regular user: activities in their section
+        upcoming = session.exec(
+            select(Activity)
+            .join(ActivitySection, ActivitySection.activity_id == Activity.id)
+            .where(
+                ActivitySection.section_id == section_id,
+                Activity.is_active.is_(True),
+                ActivitySection.is_active.is_(True),
+            )
+            .order_by(col(Activity.created_at).desc())
+            .limit(1)
+        ).first()
+
+        # Determine ordered past activities (excluding the upcoming one) to create historical points.
+        past_activities = session.exec(
+            select(Activity)
+            .join(ActivitySection, ActivitySection.activity_id == Activity.id)
+            .where(
+                ActivitySection.section_id == section_id,
+                Activity.is_active.is_(True),
+                ActivitySection.is_active.is_(True),
+            )
+            .order_by(col(Activity.created_at).asc())
+        ).all()
 
     # Build historical + forecast points for each student
     series = []
-
-    # Determine ordered past activities (excluding the upcoming one) to create historical points.
-    past_activities = session.exec(
-        select(Activity)
-        .join(ActivitySection, ActivitySection.activity_id == Activity.id)
-        .where(
-            ActivitySection.section_id == section_id,
-            Activity.is_active.is_(True),
-            ActivitySection.is_active.is_(True),
-        )
-        .order_by(col(Activity.created_at).asc())
-    ).all()
 
     for u in users:
         user_subs = session.exec(select(Submission).where(Submission.user_id == u.id)).all()
