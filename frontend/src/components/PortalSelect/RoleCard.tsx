@@ -1,10 +1,10 @@
 import { ArrowRight } from "lucide-react"
 import type { ReactNode } from "react"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ────
 
 export interface RoleCardProps {
-  /** Card title, e.g. "Student" or "Administrator" */
+  /** Card title either "Student" or "Administrator" */
   title: string
   /** Short description of what this role offers */
   description: string
@@ -16,7 +16,7 @@ export interface RoleCardProps {
   isActive?: boolean
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component ────
 
 /**
  * RoleCard
