@@ -96,7 +96,7 @@ function StudentTableRow({ student, isSelected, onSelect }: StudentRowProps) {
 
 /**
  * StudentPerformanceDashboard
- * Three-section performance tracking dashboard:
+ * Three-section performance tracking dashboard: can remove if not needed
  *
  *  ┌─────────────────────────────────────────┐
  *  │  1. Class AI Trend (line chart)          │
