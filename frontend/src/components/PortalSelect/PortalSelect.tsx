@@ -3,7 +3,7 @@ import { CalendarDays, GraduationCap, ShieldCheck } from "lucide-react"
 import Navbar from "@/components/Common/Navbar"
 import { RoleCard } from "./RoleCard"
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── Data ────
 
 const ROLES = [
   {
@@ -24,7 +24,7 @@ const ROLES = [
   },
 ] as const
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component ────
 
 /**
  * PortalSelect
