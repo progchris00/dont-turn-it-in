@@ -8,7 +8,6 @@ export const Route = createFileRoute("/admin-dashboard")({
     if (!isLoggedIn()) {
       throw redirect({ to: "/login" })
     }
-    // Uncomment when the backend guard is available:
     // const user = await UsersService.readUserMe()
     // if (!user.is_superuser) throw redirect({ to: "/" })
   },
