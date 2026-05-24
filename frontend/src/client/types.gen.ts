@@ -114,6 +114,7 @@ export type SubmissionResponse = {
     id: string;
     studentName: string;
     activityTitle: string;
+    activityId: (string | null);
     submittedAt: string;
     aiflag: (string | null);
     aiPercent: number;

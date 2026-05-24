@@ -16,6 +16,7 @@ class SubmissionResponse(SQLModel):
     id: uuid.UUID
     studentName: str
     activityTitle: str
+    activityId: uuid.UUID | None
     submittedAt: datetime
     aiflag: str | None
     aiPercent: float
@@ -40,6 +41,7 @@ def get_submissions(
             id=str(submission.id),
             studentName=user.full_name or user.email if user else "Unknown User",
             activityTitle=activity.activity_title if activity else "Untitled Submission",
+            activityId=submission.activity_id,
             submittedAt=submission.submitted_at,
             aiflag=submission.aiflag or submission.prediction,
             aiPercent=float(submission.ai_probability),
@@ -89,6 +91,18 @@ async def create_student_submission(
             detail="Activity is not assigned to this user's section",
         )
 
+    existing_submission = session.exec(
+        select(Submission).where(
+            Submission.user_id == current_user.id,
+            Submission.activity_id == activity.id,
+        )
+    ).first()
+    if existing_submission:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Activity already submitted",
+        )
+
     result = predict_text(text)
     submission = create_submission(
         session=session,
@@ -104,6 +118,7 @@ async def create_student_submission(
         id=submission.id,
         studentName=current_user.full_name or current_user.email,
         activityTitle=activity.activity_title,
+        activityId=submission.activity_id,
         submittedAt=submission.submitted_at,
         aiflag=submission.aiflag or submission.prediction,
         aiPercent=float(submission.ai_probability),

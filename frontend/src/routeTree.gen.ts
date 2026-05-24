@@ -13,6 +13,7 @@ import { Route as StudentPortalRouteImport } from './routes/student-portal'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
+import { Route as PortalSelectRouteImport } from './routes/portal-select'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
 import { Route as LayoutRouteImport } from './routes/_layout'
@@ -41,6 +42,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RecoverPasswordRoute = RecoverPasswordRouteImport.update({
   id: '/recover-password',
   path: '/recover-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalSelectRoute = PortalSelectRouteImport.update({
+  id: '/portal-select',
+  path: '/portal-select',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin-dashboard': typeof AdminDashboardRoute
   '/login': typeof LoginRoute
+  '/portal-select': typeof PortalSelectRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-dashboard': typeof AdminDashboardRoute
   '/login': typeof LoginRoute
+  '/portal-select': typeof PortalSelectRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/_layout': typeof LayoutRouteWithChildren
   '/admin-dashboard': typeof AdminDashboardRoute
   '/login': typeof LoginRoute
+  '/portal-select': typeof PortalSelectRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin-dashboard'
     | '/login'
+    | '/portal-select'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin-dashboard'
     | '/login'
+    | '/portal-select'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/_layout'
     | '/admin-dashboard'
     | '/login'
+    | '/portal-select'
     | '/recover-password'
     | '/reset-password'
     | '/signup'
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   AdminDashboardRoute: typeof AdminDashboardRoute
   LoginRoute: typeof LoginRoute
+  PortalSelectRoute: typeof PortalSelectRoute
   RecoverPasswordRoute: typeof RecoverPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       path: '/recover-password'
       fullPath: '/recover-password'
       preLoaderRoute: typeof RecoverPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal-select': {
+      id: '/portal-select'
+      path: '/portal-select'
+      fullPath: '/portal-select'
+      preLoaderRoute: typeof PortalSelectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   AdminDashboardRoute: AdminDashboardRoute,
   LoginRoute: LoginRoute,
+  PortalSelectRoute: PortalSelectRoute,
   RecoverPasswordRoute: RecoverPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,

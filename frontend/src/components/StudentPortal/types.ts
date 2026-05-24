@@ -8,6 +8,7 @@ export interface Activity {
 export interface Submission {
   id: string | number
   activityTitle: string
+  activityId: string | null
   studentName: string
   submittedAt: string
   aiflag: string

@@ -1,14 +1,49 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Navbar from "@/components/Common/Navbar"
 import ActivityTab from "@/components/StudentPortal/ActivityTab"
 import SubmissionTab from "@/components/StudentPortal/SubmissionTab"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SubmissionsService, type SubmissionsCreateStudentSubmissionData } from "@/client"
 import { useActivities } from "@/hooks/useActivities"
 import { useSubmissions } from "@/hooks/useSubmissions"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
+
+type SubmissionPayload = {
+  activityId: string | number
+  file: File
+}
 
 export function StudentPortal() {
   const activities = useActivities()
   const submissions = useSubmissions()
+  const queryClient = useQueryClient()
+  const { showSuccessToast, showErrorToast } = useCustomToast()
+
+  const submitMutation = useMutation({
+    mutationFn: async ({ activityId, file }: SubmissionPayload) => {
+      const formData: SubmissionsCreateStudentSubmissionData["formData"] = {
+        activity_id: String(activityId),
+        file,
+      }
+
+      return SubmissionsService.createStudentSubmission({ formData })
+    },
+    onSuccess: () => {
+      showSuccessToast("Activity submitted successfully")
+    },
+    onError: handleError.bind(showErrorToast),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["student-portal"] })
+    },
+  })
+
+  const submittedActivityIds = new Set(
+    submissions.submissions
+      .map((submission) => submission.activityId)
+      .filter((activityId): activityId is string => Boolean(activityId)),
+  )
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -41,8 +76,15 @@ export function StudentPortal() {
               loading={activities.loading}
               error={activities.error}
               onRetry={activities.refetch}
-              onSubmit={() => undefined}
-              submittingId={null}
+              onSubmit={(activityId, file) => {
+                submitMutation.mutate({ activityId, file })
+              }}
+              submittingId={
+                submitMutation.isPending
+                  ? submitMutation.variables?.activityId ?? null
+                  : null
+              }
+              submittedActivityIds={submittedActivityIds}
             />
           </TabsContent>
 
