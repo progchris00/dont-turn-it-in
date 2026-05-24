@@ -1,3 +1,4 @@
+// dashboard mock placeholder
 import { UserCircle2 } from "lucide-react"
 import { useCallback, useState } from "react"
 
@@ -16,7 +17,7 @@ import { SimulatePanel } from "./SimulatePanel"
 import { StudentTable } from "./StudentTable/StudentTable"
 import type { GradeVsAIPoint, OverviewStats, RiskLevel, SimulationResult, StudentRow, WeeklyTrendPoint } from "./types"
 
-// ─── RoleBar sub-component ────────────────────────────────────────────────────
+// ─── RoleBar sub-component ─────
 
 interface RoleBarProps {
   userName: string
