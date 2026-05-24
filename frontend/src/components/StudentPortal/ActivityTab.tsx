@@ -1,19 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SubmitActivity from "@/components/StudentPortal/Buttons/SubmitActivity";
 import EmptyState from "@/components/StudentPortal/EmptyState";
 import type { Activity } from "@/components/StudentPortal/types";
 import { Button } from "@/components/ui/button";
 import { SubmitActivityModal } from "./SubmitActivityModal";
-import { submitActivity } from "@/services/submissionServices";
 
 interface ActivityTabProps {
-  activities: Activity[]
-  loading: boolean
-  error: string | null
-  onRetry: () => void
-  onSubmit: (activityId: string | number, file: File) => void
-  submittingId: string | number | null
-  submittedActivityIds: Set<string>
+  activities: Activity[];
+  loading: boolean;
+  error: string | null;
+  onRetry: () => void;
+  onSubmit: (activityId: string | number, file: File) => void;
+  submittingId: string | number | null;
+  submittedActivityIds: Set<string>;
 }
 
 export function ActivityTab({
@@ -26,15 +25,19 @@ export function ActivityTab({
   submittedActivityIds,
 }: ActivityTabProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedActivityId, setSelectedActivityId] = useState<
-    string | number | null
-  >(null);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | number | null>(null);
   const [selectedActivityTitle, setSelectedActivityTitle] = useState("");
 
-  // 🔥 LOCAL API STATE ONLY (no UI changes)
-  const [internalSubmitting, setInternalSubmitting] = useState<
-    string | number | null
-  >(null);
+  useEffect(() => {
+    if (selectedActivityId === null) return;
+
+    const selectedActivityKey = String(selectedActivityId);
+    if (submittedActivityIds.has(selectedActivityKey) && !submittingId) {
+      setModalOpen(false);
+      setSelectedActivityId(null);
+      setSelectedActivityTitle("");
+    }
+  }, [selectedActivityId, submittedActivityIds, submittingId]);
 
   const handleOpenModal = (activityId: string | number, title: string) => {
     setSelectedActivityId(activityId);
@@ -42,33 +45,16 @@ export function ActivityTab({
     setModalOpen(true);
   };
 
-  const handleModalSubmit = async (file: File | null) => {
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedActivityId(null);
+    setSelectedActivityTitle("");
+  };
+
+  const handleModalSubmit = (file: File | null) => {
     if (!file || selectedActivityId === null) return;
 
-    try {
-      setInternalSubmitting(selectedActivityId);
-
-      // 🔥 convert file → string (required by API)
-      const fileText = await file.text();
-
-      await submitActivity({
-        id: crypto.randomUUID(),
-        studentName: "John Doe", // replace later with auth
-        activityTitle: selectedActivityTitle,
-        submittedAt: new Date().toISOString(),
-
-        aiflag: fileText,
-        aiPercent: 0,
-      });
-
-      setModalOpen(false);
-      setSelectedActivityId(null);
-      setSelectedActivityTitle("");
-    } catch (err) {
-      console.error("Submission failed:", err);
-    } finally {
-      setInternalSubmitting(null);
-    }
+    onSubmit(selectedActivityId, file);
   };
 
   if (loading) {
@@ -105,102 +91,55 @@ export function ActivityTab({
   }
 
   return (
-    <div className="space-y-4">
-      {activities.map((activity) => {
-        const activityKey = String(activity.id)
-        const isSubmitted = submittedActivityIds.has(activityKey)
-        const selectedFile = selectedFiles[activityKey] ?? null
-        const isSubmitting = submittingId === activity.id
-
-        return (
-        <div
-          key={activity.id}
-          className="flex w-full flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
-        >
-          <div className="space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="text-lg font-semibold tracking-tight">
-                {activity.activityTitle}
-              </h3>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
-                  isSubmitted
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-orange-100 text-orange-600"
-                }`}
-              >
-                {isSubmitted ? "Submitted" : "Open"}
-              </span>
-            </div>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {activity.description}
-            </p>
-            <p className="text-sm font-medium text-foreground">
-              Due {activity.deadline}
-            </p>
-          </div>
     <>
-      {/* ❗ UI UNCHANGED BELOW */}
       <div className="space-y-4">
-        {activities.map((activity) => (
-          <div
-            key={activity.id}
-            className="flex w-full flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
-          >
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-lg font-semibold tracking-tight">
-                  {activity.activityTitle}
-                </h3>
-                <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-600">
-                  Open
-                </span>
+        {activities.map((activity) => {
+          const activityKey = String(activity.id);
+          const isSubmitted = submittedActivityIds.has(activityKey);
+          const isSubmitting = submittingId === activity.id;
+
+          return (
+            <div
+              key={activity.id}
+              className="flex w-full flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold tracking-tight">
+                    {activity.activityTitle}
+                  </h3>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      isSubmitted
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-orange-100 text-orange-600"
+                    }`}
+                  >
+                    {isSubmitted ? "Submitted" : "Open"}
+                  </span>
+                </div>
+
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {activity.description}
+                </p>
+
+                <p className="text-sm font-medium text-foreground">Due {activity.deadline}</p>
               </div>
 
-              <p className="text-sm leading-6 text-muted-foreground">
-                {activity.description}
-              </p>
-
-              <p className="text-sm font-medium text-foreground">
-                Due {activity.deadline}
-              </p>
-            </div>
-
-          <div className="mt-6 space-y-3">
-            {isSubmitted ? (
-              <p className="text-sm text-emerald-700">
-                This activity has already been submitted.
-              </p>
-            ) : (
-              <>
-                <Input
-                  accept=".txt,text/plain"
-                  disabled={isSubmitting}
-                  onChange={(event) => {
-                    setSelectedFiles((currentFiles) => ({
-                      ...currentFiles,
-                      [activityKey]: event.target.files?.[0] ?? null,
-                    }))
-                  }}
-                  type="file"
-                />
-                <div className="flex items-center justify-end">
+              <div className="mt-6 flex items-center justify-end">
+                {isSubmitted ? (
+                  <p className="text-sm text-emerald-700">This activity has already been submitted.</p>
+                ) : (
                   <SubmitActivity
-                    onClick={() => {
-                      if (selectedFile) {
-                        onSubmit(activity.id, selectedFile)
-                      }
-                    }}
-                    disabled={!selectedFile || isSubmitting}
+                    onClick={() => handleOpenModal(activity.id, activity.activityTitle)}
+                    disabled={isSubmitting}
                     state={isSubmitting ? "submitting" : "idle"}
                   />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-          )
-      })}
+                )}
+              </div>
+            </div>
+          );
+        })}
 
         <div className="pt-2 text-center text-xs text-muted-foreground">
           Complete all active activities before the due date.
@@ -209,10 +148,10 @@ export function ActivityTab({
 
       <SubmitActivityModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseModal}
         activityTitle={selectedActivityTitle}
         onSubmit={handleModalSubmit}
-        loading={internalSubmitting === selectedActivityId}
+        loading={selectedActivityId !== null && submittingId === selectedActivityId}
       />
     </>
   );
