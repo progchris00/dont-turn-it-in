@@ -1,5 +1,5 @@
 import { UserCircle2 } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { Navbar } from "@/components/Common/Navbar"
 import { fetchDashboardData } from "./charts/api"
@@ -14,13 +14,14 @@ import { StudentPerformanceDashboard } from "./charts/StudentPerformanceDashboar
 type DashboardData = Awaited<ReturnType<typeof fetchDashboardData>>
 
 type ClassTrendPointCompat = ClassTrendPoint
-
 type RiskBucketCompat = RiskBucket
+
+type UserRole = "admin" | "student" | "guest"
 
 // ─── RoleBar sub-component ─────
 interface RoleBarProps {
   userName: string
-  role: string
+  role: UserRole
   onSwitchRole: () => void
 }
 
@@ -44,16 +45,15 @@ function RoleBar({ userName, role, onSwitchRole }: RoleBarProps) {
 
 function safeLabelToRiskLevel(label: RiskLevel | string): RiskLevel {
   if (label === "Low" || label === "Moderate" || label === "High") return label
-  // default fallback
   return "Moderate"
 }
 
 export function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [role, setRole] = useState("Admin")
-  // We keep StudentPerformanceDashboard (which currently expects MOCK_* inside)
-  // but we will pass real data by building the props it uses.
+
+  const [role] = useState<UserRole>("admin")
+
   const [classTrend, setClassTrend] = useState<ClassTrendPointCompat[]>([])
   const [riskBuckets, setRiskBuckets] = useState<RiskBucketCompat[]>([])
   const [students, setStudents] = useState<PerformanceStudent[]>([])
@@ -62,24 +62,20 @@ export function AdminDashboard() {
     try {
       setLoading(true)
       setError(null)
+
       const data: DashboardData = await fetchDashboardData()
 
       setClassTrend((data.classTrend ?? []) as ClassTrendPointCompat[])
-
-      // Server provides bucket color inconsistently; reuse chart color mapping by label.
-      // StudentPerformanceDashboard currently uses MOCK_* and dashboardData colors for styling,
-      // so we only need correct labels/counts.
       setRiskBuckets((data.aiDistribution ?? []) as RiskBucketCompat[])
 
-      // Build student rows compatible with StudentPerformanceDashboard.
-      // Backend returns student-table rows with predictedAiPercent; forecast series is a separate endpoint.
       const studentById = new Map<string, PerformanceStudent>()
+
       for (const s of (data.studentTable ?? []) as any[]) {
         const riskLevel = safeLabelToRiskLevel(
           s.riskLevel ?? s.predictiveFlag ?? "Moderate",
         )
-        const forecastData = [] as any[]
-        studentById.set(String(s.riskScore ?? s.studentId ?? s.studentName), {
+
+        studentById.set(String(s.studentName ?? s.id), {
           id: String(s.studentName ?? s.id ?? Math.random()),
           name: String(s.studentName ?? "Student"),
           riskLevel,
@@ -92,20 +88,19 @@ export function AdminDashboard() {
           submissions: Number(s.numSubmissions ?? 0),
           actionableRemark: String(s.actionableRemark ?? ""),
           predictiveFlag: safeLabelToRiskLevel(s.predictiveFlag ?? riskLevel),
-          forecastData,
+          forecastData: [],
         })
       }
 
-      // Attach forecast points per studentId.
       const forecastLineSeries = (data.forecastLine ?? []) as any[]
+
       for (const series of forecastLineSeries) {
-        // since our PerformanceStudent id is not guaranteed to match studentId, fall back to name match.
-        const target =
-          [...studentById.values()].find(
-            (x) => x.name === series.studentName,
-          ) ?? null
+        const target = [...studentById.values()].find(
+          (x) => x.name === series.studentName,
+        )
 
         if (!target) continue
+
         target.forecastData = (series.points ?? []).map(
           (pt: any, idx: number) => ({
             week: typeof pt.x === "number" ? pt.x : idx,
@@ -128,20 +123,22 @@ export function AdminDashboard() {
     load()
   }, [load])
 
-  const handleSwitchRole = useMemo(
-    () => () => {
-      window.location.href = "/portal-select"
-    },
-    [],
-  )
+  const handleSwitchRole = useCallback(() => {
+    window.location.href = "/portal-select"
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fdf4f0]">
+      {/* ✅ FIX: no props here */}
       <Navbar />
 
-      <RoleBar role={role} userName="User Admin" onSwitchRole={handleSwitchRole} />
+      <RoleBar
+        role={role}
+        userName="User Admin"
+        onSwitchRole={handleSwitchRole}
+      />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
         {loading && (
           <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
             Loading analytics…
@@ -154,11 +151,67 @@ export function AdminDashboard() {
           </div>
         )}
 
-        <StudentPerformanceDashboard
-          classTrend={classTrend}
-          aiDistribution={riskBuckets}
-          students={students}
-        />
+        {/* Quick Stats Section */}
+        {!loading && !error && (
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Total Students
+              </h3>
+              <p className="mt-2 text-2xl font-bold text-gray-900">
+                {students.length}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                High Risk
+              </h3>
+              <p className="mt-2 text-2xl font-bold text-red-600">
+                {students.filter((s) => s.riskLevel === "High").length}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Moderate Risk
+              </h3>
+              <p className="mt-2 text-2xl font-bold text-yellow-600">
+                {students.filter((s) => s.riskLevel === "Moderate").length}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Low Risk
+              </h3>
+              <p className="mt-2 text-2xl font-bold text-green-600">
+                {students.filter((s) => s.riskLevel === "Low").length}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* Charts & Analytics Section */}
+        {!loading && !error && (
+          <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <header className="border-b border-gray-100 px-6 py-5">
+              <h2 className="text-lg font-bold text-gray-900">
+                Student Performance Analytics
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Overview of class trends and individual student forecasts
+              </p>
+            </header>
+            <div className="p-6">
+              <StudentPerformanceDashboard
+                classTrend={classTrend}
+                aiDistribution={riskBuckets}
+                students={students}
+              />
+            </div>
+          </section>
+        )}
       </main>
     </div>
   )

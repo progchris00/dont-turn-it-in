@@ -23,7 +23,7 @@ function Card({
 }) {
   return (
     <section
-      className={`rounded-xl border border-gray-200 bg-white shadow-sm ${className}`}
+      className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ${className}`}
     >
       <header className="border-b border-gray-100 px-5 py-4">
         <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
@@ -128,8 +128,11 @@ export function StudentPerformanceDashboard({
       <Card
         title="Class AI Usage Trend"
         subtitle="Average AI % across all students — weekly"
+        className="min-h-[320px]"
       >
-        <ClassAITrendChart data={classTrend} />
+        <div className="min-h-[280px]">
+          <ClassAITrendChart data={classTrend} />
+        </div>
       </Card>
 
       {/* ── Section 2: Risk level distribution ── */}
@@ -140,17 +143,20 @@ export function StudentPerformanceDashboard({
             ? `Highlighting: ${selectedStudent.riskLevel}`
             : "Number of students per risk category"
         }
+        className="min-h-[320px]"
       >
-        <RiskDistributionChart
-          data={aiDistribution}
-          highlightLabel={selectedStudent?.riskLevel}
-        />
+        <div className="min-h-[260px]">
+          <RiskDistributionChart
+            data={aiDistribution}
+            highlightLabel={selectedStudent?.riskLevel}
+          />
+        </div>
       </Card>
 
       {/* ── Section 3: Table + dynamic forecast ── */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_480px]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,480px)]">
         {/* 3a — Student table */}
-        <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
+        <section className="min-h-[360px] rounded-xl border border-gray-200 bg-white shadow-sm">
           <header className="border-b border-gray-100 px-5 py-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
               Student Directory
@@ -198,7 +204,7 @@ export function StudentPerformanceDashboard({
         </section>
 
         {/* 3b — Dynamic per-student forecast */}
-        <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
+        <section className="min-h-[360px] rounded-xl border border-gray-200 bg-white shadow-sm">
           <header className="border-b border-gray-100 px-5 py-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
               Predictive Forecast
@@ -211,7 +217,9 @@ export function StudentPerformanceDashboard({
           </header>
 
           <div className="p-5">
-            <StudentForecastChart student={selectedStudent} />
+            <div className="min-h-[260px]">
+              <StudentForecastChart student={selectedStudent} />
+            </div>
 
             {/* Legend */}
             {selectedStudent && (
