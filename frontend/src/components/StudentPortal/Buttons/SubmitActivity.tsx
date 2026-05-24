@@ -1,10 +1,9 @@
-import { Check, Send } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import { Send, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SubmitActivityProps {
-  onClick: () => void
-  disabled?: boolean
+  onClick: () => void;
+  disabled?: boolean;
   state?: "idle" | "submitting" | "submitted"
 }
 
@@ -26,10 +25,19 @@ export function SubmitActivity({
           : "bg-orange-600 text-white hover:bg-orange-700"
       }
     >
-      {isSubmitted ? <Check className="size-4" /> : <Send className="size-4" />}
-      {isSubmitted ? "Submitted" : state === "submitting" ? "Submitting..." : "Submit Activity"}
+      {disabled ? (
+        <>
+          <Loader2 className="size-4 animate-spin" />
+          Submitting...
+        </>
+      ) : (
+        <>
+          <Send className="size-4" />
+          Submit Activity
+        </>
+      )}
     </Button>
-  )
+  );
 }
 
-export default SubmitActivity
+export default SubmitActivity;
