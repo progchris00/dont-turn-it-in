@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 
 import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
-import icon from "/assets/images/fastapi-icon.svg";
-import iconLight from "/assets/images/fastapi-icon-light.svg";
+import icon from "/assets/images/icon.png";
+import iconLight from "/assets/images/icon.png";
 import logo from "./../../../public/assets/images/logo.png";
 import logoLight from "/assets/images/black-logo.png";
 
