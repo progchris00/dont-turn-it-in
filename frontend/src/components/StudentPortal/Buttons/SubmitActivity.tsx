@@ -1,10 +1,9 @@
-import { Send } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import { Send, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SubmitActivityProps {
-  onClick: () => void
-  disabled?: boolean
+  onClick: () => void;
+  disabled?: boolean;
 }
 
 export function SubmitActivity({
@@ -18,10 +17,19 @@ export function SubmitActivity({
       disabled={disabled}
       className="bg-orange-600 text-white hover:bg-orange-700"
     >
-      <Send className="size-4" />
-      {disabled ? "Submitting..." : "Submit Activity"}
+      {disabled ? (
+        <>
+          <Loader2 className="size-4 animate-spin" />
+          Submitting...
+        </>
+      ) : (
+        <>
+          <Send className="size-4" />
+          Submit Activity
+        </>
+      )}
     </Button>
-  )
+  );
 }
 
-export default SubmitActivity
+export default SubmitActivity;
