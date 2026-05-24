@@ -7,8 +7,6 @@ import { RiskDistributionChart } from "./RiskDistributionChart"
 import { StudentForecastChart } from "./StudentForecastChart"
 import type { StudentPerformanceDashboardApiProps } from "./StudentPerformanceDashboardApi"
 
-const MOCK_PERFORMANCE_STUDENTS: PerformanceStudent[] = []
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Reusable section card wrapper */
@@ -179,7 +177,7 @@ export function StudentPerformanceDashboard({
               </thead>
 
               <tbody>
-                {MOCK_PERFORMANCE_STUDENTS.map((student) => (
+                {students.map((student) => (
                   <StudentTableRow
                     key={student.id}
                     student={student}
