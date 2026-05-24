@@ -12,6 +12,7 @@ export const fetchSubmissions = async (): Promise<Submission[]> => {
     id: submission.id,
     studentName: submission.studentName,
     activityTitle: submission.activityTitle,
+    activityId: submission.activityId,
     submittedAt: formatSubmissionDate(submission.submittedAt),
     aiflag: submission.aiflag ?? "Pending review",
     aiPercent: submission.aiPercent,

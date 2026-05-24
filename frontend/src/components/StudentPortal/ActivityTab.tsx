@@ -2,14 +2,17 @@ import SubmitActivity from "@/components/StudentPortal/Buttons/SubmitActivity"
 import EmptyState from "@/components/StudentPortal/EmptyState"
 import type { Activity } from "@/components/StudentPortal/types"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 interface ActivityTabProps {
   activities: Activity[]
   loading: boolean
   error: string | null
   onRetry: () => void
-  onSubmit: (activityId: string | number) => void
+  onSubmit: (activityId: string | number, file: File) => void
   submittingId: string | number | null
+  submittedActivityIds: Set<string>
 }
 
 export function ActivityTab({
@@ -19,7 +22,12 @@ export function ActivityTab({
   onRetry,
   onSubmit,
   submittingId,
+  submittedActivityIds,
 }: ActivityTabProps) {
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>(
+    {},
+  )
+
   if (loading) {
     return (
       <div className="w-full rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
@@ -55,7 +63,13 @@ export function ActivityTab({
 
   return (
     <div className="space-y-4">
-      {activities.map((activity) => (
+      {activities.map((activity) => {
+        const activityKey = String(activity.id)
+        const isSubmitted = submittedActivityIds.has(activityKey)
+        const selectedFile = selectedFiles[activityKey] ?? null
+        const isSubmitting = submittingId === activity.id
+
+        return (
         <div
           key={activity.id}
           className="flex w-full flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
@@ -65,8 +79,14 @@ export function ActivityTab({
               <h3 className="text-lg font-semibold tracking-tight">
                 {activity.activityTitle}
               </h3>
-              <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-600">
-                Open
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  isSubmitted
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-orange-100 text-orange-600"
+                }`}
+              >
+                {isSubmitted ? "Submitted" : "Open"}
               </span>
             </div>
             <p className="text-sm leading-6 text-muted-foreground">
@@ -77,14 +97,41 @@ export function ActivityTab({
             </p>
           </div>
 
-          <div className="mt-6 flex items-center justify-end">
-            <SubmitActivity
-              onClick={() => onSubmit(activity.id)}
-              disabled={submittingId === activity.id}
-            />
+          <div className="mt-6 space-y-3">
+            {isSubmitted ? (
+              <p className="text-sm text-emerald-700">
+                This activity has already been submitted.
+              </p>
+            ) : (
+              <>
+                <Input
+                  accept=".txt,text/plain"
+                  disabled={isSubmitting}
+                  onChange={(event) => {
+                    setSelectedFiles((currentFiles) => ({
+                      ...currentFiles,
+                      [activityKey]: event.target.files?.[0] ?? null,
+                    }))
+                  }}
+                  type="file"
+                />
+                <div className="flex items-center justify-end">
+                  <SubmitActivity
+                    onClick={() => {
+                      if (selectedFile) {
+                        onSubmit(activity.id, selectedFile)
+                      }
+                    }}
+                    disabled={!selectedFile || isSubmitting}
+                    state={isSubmitting ? "submitting" : "idle"}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
-      ))}
+          )
+      })}
 
       <div className="pt-2 text-center text-xs text-muted-foreground">
         Complete all active activities before the due date.

@@ -536,6 +536,18 @@ export const SubmissionResponseSchema = {
             type: 'string',
             title: 'Activitytitle'
         },
+        activityId: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Activityid'
+        },
         submittedAt: {
             type: 'string',
             format: 'date-time',
@@ -558,7 +570,7 @@ export const SubmissionResponseSchema = {
         }
     },
     type: 'object',
-    required: ['id', 'studentName', 'activityTitle', 'submittedAt', 'aiflag', 'aiPercent'],
+    required: ['id', 'studentName', 'activityTitle', 'activityId', 'submittedAt', 'aiflag', 'aiPercent'],
     title: 'SubmissionResponse'
 } as const;
 
