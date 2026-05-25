@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Student seed data
 
 STUDENTS_SECTION_A = [
-    {"full_name": "Arwil Martin S. Paraiso",  "email": "arwil.paraiso@school.edu.ph"},
+    {"full_name": "Marivic Austin S. Palma",  "email": "marivic.palma@school.edu.ph"},
     {"full_name": "Isabella Marie Garcia",     "email": "isabella.garcia@school.edu.ph"},
     {"full_name": "Sophia Anne Martinez",      "email": "sophia.martinez@school.edu.ph"},
     {"full_name": "Liam Jose Reyes",           "email": "liam.reyes@school.edu.ph"},
