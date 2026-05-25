@@ -138,79 +138,39 @@ export function AdminDashboard() {
         onSwitchRole={handleSwitchRole}
       />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <main className="flex-1">
         {loading && (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
-            Loading analytics…
+          <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
+              Loading analytics…
+            </div>
           </div>
         )}
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-white p-6 text-sm text-red-700">
-            {error}
+          <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div className="rounded-xl border border-red-200 bg-white p-6 text-sm text-red-700">
+              {error}
+            </div>
           </div>
         )}
 
-        {/* Quick Stats Section */}
         {!loading && !error && (
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Total Students
-              </h3>
-              <p className="mt-2 text-2xl font-bold text-gray-900">
-                {students.length}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                High Risk
-              </h3>
-              <p className="mt-2 text-2xl font-bold text-red-600">
-                {students.filter((s) => s.riskLevel === "High").length}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Moderate Risk
-              </h3>
-              <p className="mt-2 text-2xl font-bold text-yellow-600">
-                {students.filter((s) => s.riskLevel === "Moderate").length}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Low Risk
-              </h3>
-              <p className="mt-2 text-2xl font-bold text-green-600">
-                {students.filter((s) => s.riskLevel === "Low").length}
-              </p>
-            </div>
-          </section>
-        )}
-
-        {/* Charts & Analytics Section */}
-        {!loading && !error && (
-          <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-            <header className="border-b border-gray-100 px-6 py-5">
-              <h2 className="text-lg font-bold text-gray-900">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">
                 Student Performance Analytics
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Overview of class trends and individual student forecasts
+              </h1>
+              <p className="mt-2 text-sm text-gray-600">
+                Comprehensive overview of class trends and individual student forecasts
               </p>
-            </header>
-            <div className="p-6">
-              <StudentPerformanceDashboard
-                classTrend={classTrend}
-                aiDistribution={riskBuckets}
-                students={students}
-              />
             </div>
-          </section>
+            <StudentPerformanceDashboard
+              classTrend={classTrend}
+              aiDistribution={riskBuckets}
+              students={students}
+            />
+          </div>
         )}
       </main>
     </div>
