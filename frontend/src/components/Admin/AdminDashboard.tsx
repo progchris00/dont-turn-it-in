@@ -157,7 +157,7 @@ export function AdminDashboard() {
 
         {!loading && !error && (
           <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mb-6">
+            <div className="mb-8">
               <h1 className="text-2xl font-bold text-gray-900">
                 Student Performance Analytics
               </h1>
@@ -165,6 +165,47 @@ export function AdminDashboard() {
                 Comprehensive overview of class trends and individual student forecasts
               </p>
             </div>
+
+            {/* Quick Stats Section */}
+            <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Total Students
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-gray-900">
+                  {students.length}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  High Risk
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-red-600">
+                  {students.filter((s) => s.riskLevel === "High").length}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Moderate Risk
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-yellow-600">
+                  {students.filter((s) => s.riskLevel === "Moderate").length}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Low Risk
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-green-600">
+                  {students.filter((s) => s.riskLevel === "Low").length}
+                </p>
+              </div>
+            </section>
+
+            {/* Charts & Analytics */}
             <StudentPerformanceDashboard
               classTrend={classTrend}
               aiDistribution={riskBuckets}
