@@ -3,11 +3,18 @@ import type { ClassTrendPoint, RiskBucket, RiskLevel } from "./dashboardData"
 const API_BASE = "/api/v1/admin/analytics"
 
 async function fetchJSON<T>(url: string): Promise<T> {
+  const token = localStorage.getItem("access_token")
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  }
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`
+  }
+
   const res = await fetch(url, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   })
 
   if (!res.ok) {

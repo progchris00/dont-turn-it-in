@@ -1,14 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { UsersService } from "@/client"
 import AdminDashboard from "@/components/Admin/AdminDashboard"
-import { AuthLayout } from "@/components/Common/AuthLayout"
 import { isLoggedIn } from "@/hooks/useAuth"
 
 function AdminDashboardPage() {
   return (
-    <AuthLayout>
       <AdminDashboard />
-    </AuthLayout>
   )
 }
 

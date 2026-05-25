@@ -124,34 +124,37 @@ export function StudentPerformanceDashboard({
 
   return (
     <div className="flex flex-col gap-5">
-      {/* ── Section 1: Class-wide AI trend ── */}
-      <Card
-        title="Class AI Usage Trend"
-        subtitle="Average AI % across all students — weekly"
-        className="min-h-[320px]"
-      >
-        <div className="min-h-[280px]">
-          <ClassAITrendChart data={classTrend} />
-        </div>
-      </Card>
+      {/* ── Sections 1 & 2: Side-by-side charts ── */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {/* Section 1: Class-wide AI trend */}
+        <Card
+          title="Class AI Usage Trend"
+          subtitle="Average AI % across all students — weekly"
+          className="min-h-[320px]"
+        >
+          <div className="min-h-[280px]">
+            <ClassAITrendChart data={classTrend} />
+          </div>
+        </Card>
 
-      {/* ── Section 2: Risk level distribution ── */}
-      <Card
-        title="Risk Level Distribution"
-        subtitle={
-          selectedStudent
-            ? `Highlighting: ${selectedStudent.riskLevel}`
-            : "Number of students per risk category"
-        }
-        className="min-h-[320px]"
-      >
-        <div className="min-h-[260px]">
-          <RiskDistributionChart
-            data={aiDistribution}
-            highlightLabel={selectedStudent?.riskLevel}
-          />
-        </div>
-      </Card>
+        {/* Section 2: Risk level distribution */}
+        <Card
+          title="Risk Level Distribution"
+          subtitle={
+            selectedStudent
+              ? `Highlighting: ${selectedStudent.riskLevel}`
+              : "Number of students per risk category"
+          }
+          className="min-h-[320px]"
+        >
+          <div className="min-h-[260px]">
+            <RiskDistributionChart
+              data={aiDistribution}
+              highlightLabel={selectedStudent?.riskLevel}
+            />
+          </div>
+        </Card>
+      </div>
 
       {/* ── Section 3: Table + dynamic forecast ── */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,480px)]">

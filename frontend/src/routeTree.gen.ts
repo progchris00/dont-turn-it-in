@@ -57,7 +57,7 @@ const LoginRoute = LoginRouteImport.update({
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/admin-dashboard',
   path: '/admin-dashboard',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',

@@ -1,7 +1,5 @@
-import { UserCircle2 } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
-import { Navbar } from "@/components/Common/Navbar"
 import { fetchDashboardData } from "./charts/api"
 import type {
   ClassTrendPoint,
@@ -10,38 +8,13 @@ import type {
   RiskLevel,
 } from "./charts/dashboardData"
 import { StudentPerformanceDashboard } from "./charts/StudentPerformanceDashboard"
+import { OverviewPanel } from "./OverviewPanel"
+import { SimulatePanel } from "./SimulatePanel"
 
 type DashboardData = Awaited<ReturnType<typeof fetchDashboardData>>
 
 type ClassTrendPointCompat = ClassTrendPoint
 type RiskBucketCompat = RiskBucket
-
-type UserRole = "admin" | "student" | "guest"
-
-// ─── RoleBar sub-component ─────
-interface RoleBarProps {
-  userName: string
-  role: UserRole
-  onSwitchRole: () => void
-}
-
-function RoleBar({ userName, role, onSwitchRole }: RoleBarProps) {
-  return (
-    <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-2">
-      <div className="flex items-center gap-2 text-sm text-gray-700">
-        <UserCircle2 className="h-7 w-7 text-gray-400" aria-hidden="true" />
-        <span className="font-medium">{userName}</span>
-      </div>
-      <button
-        type="button"
-        onClick={onSwitchRole}
-        className="rounded border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 active:bg-gray-100"
-      >
-        Switch Role: {role}
-      </button>
-    </div>
-  )
-}
 
 function safeLabelToRiskLevel(label: RiskLevel | string): RiskLevel {
   if (label === "Low" || label === "Moderate" || label === "High") return label
@@ -51,12 +24,18 @@ function safeLabelToRiskLevel(label: RiskLevel | string): RiskLevel {
 export function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const [role] = useState<UserRole>("admin")
+  const [isSimulating, setIsSimulating] = useState(false)
 
   const [classTrend, setClassTrend] = useState<ClassTrendPointCompat[]>([])
   const [riskBuckets, setRiskBuckets] = useState<RiskBucketCompat[]>([])
   const [students, setStudents] = useState<PerformanceStudent[]>([])
+  const [overview, setOverview] = useState({
+    num_students: 0,
+    num_submissions: 0,
+    avg_next_ai_percent: 0,
+    class_risk_score: 0,
+    class_risk_label: "Moderate",
+  })
 
   const load = useCallback(async () => {
     try {
@@ -65,6 +44,7 @@ export function AdminDashboard() {
 
       const data: DashboardData = await fetchDashboardData()
 
+      setOverview(data.overview || {})
       setClassTrend((data.classTrend ?? []) as ClassTrendPointCompat[])
       setRiskBuckets((data.aiDistribution ?? []) as RiskBucketCompat[])
 
@@ -123,40 +103,50 @@ export function AdminDashboard() {
     load()
   }, [load])
 
-  const handleSwitchRole = useCallback(() => {
-    window.location.href = "/portal-select"
-  }, [])
+  const handleSimulate = async () => {
+    setIsSimulating(true)
+    try {
+      // Simulate a delay for the button feedback
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Reload the data after simulation
+      await load()
+    } catch (e) {
+      console.error("Simulation failed:", e)
+    } finally {
+      setIsSimulating(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
+        Loading analytics…
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
+        {error}
+      </div>
+    )
+  }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fdf4f0]">
-      {/* ✅ FIX: no props here */}
-      <Navbar />
+    <div className="flex flex-col gap-5">
+      {/* Top row: Overview and Simulate panels side-by-side */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <OverviewPanel stats={overview} />
+        <SimulatePanel onSimulate={handleSimulate} isSimulating={isSimulating} />
+      </div>
 
-      <RoleBar
-        role={role}
-        userName="User Admin"
-        onSwitchRole={handleSwitchRole}
+      {/* Analytics section: full width below */}
+      <StudentPerformanceDashboard
+        classTrend={classTrend}
+        aiDistribution={riskBuckets}
+        students={students}
       />
-
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
-        {loading && (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
-            Loading analytics…
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-xl border border-red-200 bg-white p-6 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        <StudentPerformanceDashboard
-          classTrend={classTrend}
-          aiDistribution={riskBuckets}
-          students={students}
-        />
-      </main>
     </div>
   )
 }
