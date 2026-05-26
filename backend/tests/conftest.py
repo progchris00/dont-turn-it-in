@@ -1,11 +1,6 @@
 from collections.abc import Generator
 
 import pytest
-from dotenv import load_dotenv
-
-# Ensure required env vars are available for Settings() during import.
-load_dotenv("../.env", override=False)
-
 from fastapi.testclient import TestClient
 from sqlmodel import Session, delete
 
