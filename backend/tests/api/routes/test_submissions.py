@@ -64,7 +64,7 @@ def test_read_submissions(
     assert matching_submission["activityId"] == str(activity.id)
 
 
-def test_create_student_submission_rejects_duplicate_activity(
+def test_create_student_submission_allows_duplicate_activity(
     client: TestClient, superuser_token_headers: dict[str, str], db: Session
 ) -> None:
     section = Section(name="Section A")
@@ -112,5 +112,12 @@ def test_create_student_submission_rejects_duplicate_activity(
         files={"file": ("submission.txt", b"hello world", "text/plain")},
     )
 
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json()["detail"] == "Activity already submitted"
+    assert response.status_code == status.HTTP_200_OK
+
+    submissions = db.exec(
+        select(Submission).where(
+            Submission.user_id == user.id,
+            Submission.activity_id == activity.id,
+        )
+    ).all()
+    assert len(submissions) == 2

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import type { PerformanceStudent } from "./dashboardData"
 import { RISK_COLORS } from "./dashboardData"
 
@@ -97,6 +97,7 @@ export function StudentForecastChart({
 }: StudentForecastChartProps) {
   const [visible, setVisible] = useState(true)
   const prevId = useRef<string | null>(null)
+  const areaGradientId = useId()
 
   useEffect(() => {
     if (student?.id !== prevId.current) {
@@ -134,14 +135,14 @@ export function StudentForecastChart({
       >
         <defs>
           <linearGradient
-            id={`sfg-area-${student.id}`}
+            id={areaGradientId}
             x1="0"
             y1="0"
             x2="0"
             y2="1"
           >
-            <stop offset="0%" stopColor={color} stopOpacity="0.15" />
-            <stop offset="100%" stopColor={color} stopOpacity="0.01" />
+              <stop offset="0%" stopColor="#ea580c" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#ea580c" stopOpacity="0.01" />
           </linearGradient>
         </defs>
 
@@ -186,7 +187,7 @@ export function StudentForecastChart({
         ))}
 
         {/* Area */}
-        <path d={areaPath(pts)} fill={`url(#sfg-area-${student.id})`} />
+        <path d={areaPath(pts)} fill={`url(#${areaGradientId})`} />
 
         {/* Divider */}
         {splitX && (

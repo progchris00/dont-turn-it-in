@@ -76,8 +76,8 @@ export function StudentPortal() {
               loading={activities.loading}
               error={activities.error}
               onRetry={activities.refetch}
-              onSubmit={(activityId, file) => {
-                submitMutation.mutate({ activityId, file })
+              onSubmit={async (activityId, file) => {
+                await submitMutation.mutateAsync({ activityId, file })
               }}
               submittingId={
                 submitMutation.isPending

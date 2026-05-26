@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SubmitActivity from "@/components/StudentPortal/Buttons/SubmitActivity";
 import EmptyState from "@/components/StudentPortal/EmptyState";
 import type { Activity } from "@/components/StudentPortal/types";
@@ -10,7 +10,7 @@ interface ActivityTabProps {
   loading: boolean;
   error: string | null;
   onRetry: () => void;
-  onSubmit: (activityId: string | number, file: File) => void;
+  onSubmit: (activityId: string | number, file: File) => Promise<void> | void;
   submittingId: string | number | null;
   submittedActivityIds: Set<string>;
 }
@@ -28,17 +28,6 @@ export function ActivityTab({
   const [selectedActivityId, setSelectedActivityId] = useState<string | number | null>(null);
   const [selectedActivityTitle, setSelectedActivityTitle] = useState("");
 
-  useEffect(() => {
-    if (selectedActivityId === null) return;
-
-    const selectedActivityKey = String(selectedActivityId);
-    if (submittedActivityIds.has(selectedActivityKey) && !submittingId) {
-      setModalOpen(false);
-      setSelectedActivityId(null);
-      setSelectedActivityTitle("");
-    }
-  }, [selectedActivityId, submittedActivityIds, submittingId]);
-
   const handleOpenModal = (activityId: string | number, title: string) => {
     setSelectedActivityId(activityId);
     setSelectedActivityTitle(title);
@@ -51,10 +40,11 @@ export function ActivityTab({
     setSelectedActivityTitle("");
   };
 
-  const handleModalSubmit = (file: File | null) => {
+  const handleModalSubmit = async (file: File | null) => {
     if (!file || selectedActivityId === null) return;
 
-    onSubmit(selectedActivityId, file);
+    await onSubmit(selectedActivityId, file);
+    handleCloseModal();
   };
 
   if (loading) {
@@ -94,9 +84,8 @@ export function ActivityTab({
     <>
       <div className="space-y-4">
         {activities.map((activity) => {
-          const activityKey = String(activity.id);
-          const isSubmitted = submittedActivityIds.has(activityKey);
           const isSubmitting = submittingId === activity.id;
+          const isSubmitted = submittedActivityIds.has(String(activity.id));
 
           return (
             <div
@@ -128,10 +117,14 @@ export function ActivityTab({
 
               <div className="mt-6 flex items-center justify-end">
                 {isSubmitted ? (
-                  <p className="text-sm text-emerald-700">This activity has already been submitted.</p>
+                  <p className="text-sm text-emerald-700">
+                    This activity has already been submitted.
+                  </p>
                 ) : (
                   <SubmitActivity
-                    onClick={() => handleOpenModal(activity.id, activity.activityTitle)}
+                    onClick={() =>
+                      handleOpenModal(activity.id, activity.activityTitle)
+                    }
                     disabled={isSubmitting}
                     state={isSubmitting ? "submitting" : "idle"}
                   />

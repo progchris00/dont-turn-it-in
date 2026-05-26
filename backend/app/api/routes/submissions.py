@@ -91,18 +91,6 @@ async def create_student_submission(
             detail="Activity is not assigned to this user's section",
         )
 
-    existing_submission = session.exec(
-        select(Submission).where(
-            Submission.user_id == current_user.id,
-            Submission.activity_id == activity.id,
-        )
-    ).first()
-    if existing_submission:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Activity already submitted",
-        )
-
     result = predict_text(text)
     submission = create_submission(
         session=session,
