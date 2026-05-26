@@ -4,9 +4,9 @@ import { ClipboardList } from "lucide-react"
 import { Suspense } from "react"
 
 import { ActivitiesService, UsersService } from "@/client"
-import { DataTable } from "@/components/Common/DataTable"
 import AddActivity from "@/components/Activities/AddActivity"
 import { columns } from "@/components/Activities/columns"
+import { DataTable } from "@/components/Common/DataTable"
 import PendingActivities from "@/components/Pending/PendingActivities"
 
 function getActivitiesQueryOptions() {
@@ -47,7 +47,9 @@ function ActivitiesTableContent() {
         <h3 className="text-lg font-semibold">
           You don't have any activities yet
         </h3>
-        <p className="text-muted-foreground">Add a new activity to get started</p>
+        <p className="text-muted-foreground">
+          Add a new activity to get started
+        </p>
       </div>
     )
   }

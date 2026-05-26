@@ -1,15 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-
-import AdminDashboard from "@/components/AdminDashboard/AdminDashboard"
-import DashboardLayout from "@/components/Common/DashboardLayout"
-import { isLoggedIn } from "@/hooks/useAuth"
 import { UsersService } from "@/client"
+import AdminDashboard from "@/components/Admin/AdminDashboard"
+import { isLoggedIn } from "@/hooks/useAuth"
 
 function AdminDashboardPage() {
   return (
-    <DashboardLayout>
       <AdminDashboard />
-    </DashboardLayout>
   )
 }
 

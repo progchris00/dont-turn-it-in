@@ -1,180 +1,152 @@
-// dashboard mock placeholder
-import { UserCircle2 } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-import Navbar from "@/components/Common/Navbar"
-import { AnalyticsSection } from "./AnalyticsSection"
-import {
-  MOCK_AI_DISTRIBUTION,
-  MOCK_FORECAST,
-  MOCK_GRADE_VS_AI,
-  MOCK_OVERVIEW,
-  MOCK_STUDENTS,
-  MOCK_WEEKLY_TREND,
-} from "./data"
+import { fetchDashboardData } from "./charts/api"
+import type {
+  ClassTrendPoint,
+  PerformanceStudent,
+  RiskBucket,
+  RiskLevel,
+} from "./charts/dashboardData"
+import { StudentPerformanceDashboard } from "./charts/StudentPerformanceDashboard"
 import { OverviewPanel } from "./OverviewPanel"
 import { SimulatePanel } from "./SimulatePanel"
-import { StudentTable } from "./StudentTable/StudentTable"
-import type { GradeVsAIPoint, OverviewStats, RiskLevel, SimulationResult, StudentRow, WeeklyTrendPoint } from "./types"
 
-// ─── RoleBar sub-component ─────
+type DashboardData = Awaited<ReturnType<typeof fetchDashboardData>>
 
-interface RoleBarProps {
-  userName: string
-  role: string
-  onSwitchRole: () => void
+type ClassTrendPointCompat = ClassTrendPoint
+type RiskBucketCompat = RiskBucket
+
+function safeLabelToRiskLevel(label: RiskLevel | string): RiskLevel {
+  if (label === "Low" || label === "Moderate" || label === "High") return label
+  return "Moderate"
 }
 
-function RoleBar({ userName, role, onSwitchRole }: RoleBarProps) {
-  return (
-    <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-2">
-      <div className="flex items-center gap-2 text-sm text-gray-700">
-        <UserCircle2 className="h-7 w-7 text-gray-400" aria-hidden="true" />
-        <span className="font-medium">{userName}</span>
-      </div>
-      <button
-        type="button"
-        onClick={onSwitchRole}
-        className="rounded border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 active:bg-gray-100"
-      >
-        Switch Role: {role}
-      </button>
-    </div>
-  )
-}
-
-// ─── Hook: simulation state ───────────────────────────────────────────────────
-
-function useSimulation(
-  initialOverview: OverviewStats,
-  initialStudents: StudentRow[],
-  initialTrend: WeeklyTrendPoint[],
-  initialGradeVsAI: GradeVsAIPoint[],
-) {
-  const [overview, setOverview] = useState(initialOverview)
-  const [students, setStudents] = useState(initialStudents)
-  const [weeklyTrend, setWeeklyTrend] = useState(initialTrend)
-  const [gradeVsAI, setGradeVsAI] = useState(initialGradeVsAI)
+export function AdminDashboard() {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isSimulating, setIsSimulating] = useState(false)
 
-  const handleSimulate = useCallback((result: SimulationResult) => {
-    setIsSimulating(true)
+  const [classTrend, setClassTrend] = useState<ClassTrendPointCompat[]>([])
+  const [riskBuckets, setRiskBuckets] = useState<RiskBucketCompat[]>([])
+  const [students, setStudents] = useState<PerformanceStudent[]>([])
+  const [overview, setOverview] = useState({
+    num_students: 0,
+    num_submissions: 0,
+    avg_next_ai_percent: 0,
+    class_risk_score: 0,
+    class_risk_label: "Moderate",
+  })
 
-    // Brief delay to give a "real-time" feel before updating charts
-    setTimeout(() => {
-      const isHighRisk: boolean =
-        result.riskLevel === "High" || result.riskLevel === "Very High"
+  const load = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
 
-      // Update overview stats
-      setOverview((prev) => ({
-        ...prev,
-        submissions: prev.submissions + 1,
-        avgAiPercent: Math.round((prev.avgAiPercent + result.aiPercent) / 2),
-        highRiskCount: isHighRisk ? prev.highRiskCount + 1 : prev.highRiskCount,
-      }))
+      const data: DashboardData = await fetchDashboardData()
 
-      // Add simulated student row
-      const newRisk: RiskLevel = result.riskLevel
-      const simStudent: StudentRow = {
-        id: `sim-${Date.now()}`,
-        name: result.studentName,
-        riskScore: result.aiPercent,
-        submissions: 1,
-        avgAiPercent: result.aiPercent,
-        gradePercent: Math.max(0, 100 - result.aiPercent),
-        gradeTrend: result.aiPercent > 70 ? "down" : "stable",
-        predictiveFlag: newRisk,
-        actionableRemark:
-          isHighRisk ? "Immediate review required" : "Continue monitoring",
+      setOverview(data.overview || {})
+      setClassTrend((data.classTrend ?? []) as ClassTrendPointCompat[])
+      setRiskBuckets((data.aiDistribution ?? []) as RiskBucketCompat[])
+
+      const studentById = new Map<string, PerformanceStudent>()
+
+      for (const s of (data.studentTable ?? []) as any[]) {
+        const riskLevel = safeLabelToRiskLevel(
+          s.riskLevel ?? s.predictiveFlag ?? "Moderate",
+        )
+
+        studentById.set(String(s.studentName ?? s.id), {
+          id: String(s.studentName ?? s.id ?? Math.random()),
+          name: String(s.studentName ?? "Student"),
+          riskLevel,
+          riskScore:
+            s.riskScore === 1 || s.riskScore === 2 || s.riskScore === 3
+              ? s.riskScore
+              : 2,
+          avgAiPercent: Number(s.avgAiPercent ?? 0),
+          gradePercent: Number(100 - Number(s.avgAiPercent ?? 0)),
+          submissions: Number(s.numSubmissions ?? 0),
+          actionableRemark: String(s.actionableRemark ?? ""),
+          predictiveFlag: safeLabelToRiskLevel(s.predictiveFlag ?? riskLevel),
+          forecastData: [],
+        })
       }
-      setStudents((prev) => [simStudent, ...prev])
 
-      // Append new weekly trend point
-      setWeeklyTrend((prev) => [
-        ...prev,
-        { week: prev.length, aiPercent: result.aiPercent },
-      ])
+      const forecastLineSeries = (data.forecastLine ?? []) as any[]
 
-      // Add scatter point
-      setGradeVsAI((prev) => [
-        ...prev,
-        {
-          aiPercent: result.aiPercent,
-          gradePercent: Math.max(0, 100 - result.aiPercent),
-        },
-      ])
+      for (const series of forecastLineSeries) {
+        const target = [...studentById.values()].find(
+          (x) => x.name === series.studentName,
+        )
 
-      setIsSimulating(false)
-    }, 400)
+        if (!target) continue
+
+        target.forecastData = (series.points ?? []).map(
+          (pt: any, idx: number) => ({
+            week: typeof pt.x === "number" ? pt.x : idx,
+            aiPercent: Number(pt.y ?? 0),
+            isForecast:
+              pt.x === "Next" || pt.isForecast === true || pt.week === "Next",
+          }),
+        )
+      }
+
+      setStudents([...studentById.values()])
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to load analytics")
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  return {
-    overview,
-    students,
-    weeklyTrend,
-    gradeVsAI,
-    isSimulating,
-    handleSimulate,
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const handleSimulate = async () => {
+    setIsSimulating(true)
+    try {
+      // Simulate a delay for the button feedback
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Reload the data after simulation
+      await load()
+    } catch (e) {
+      console.error("Simulation failed:", e)
+    } finally {
+      setIsSimulating(false)
+    }
   }
-}
 
-// ─── Component ────────────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
+        Loading analytics…
+      </div>
+    )
+  }
 
-/**
- * AdminDashboard
- * Full-page administrator view showing classroom AI analytics.
- * Replace MOCK_* constants with real API calls when the backend is ready.
- */
-export function AdminDashboard() {
-  const {
-    overview,
-    students,
-    weeklyTrend,
-    gradeVsAI,
-    isSimulating,
-    handleSimulate,
-  } = useSimulation(
-    MOCK_OVERVIEW,
-    MOCK_STUDENTS,
-    MOCK_WEEKLY_TREND,
-    MOCK_GRADE_VS_AI,
-  )
-
-  function handleSwitchRole() {
-    // Navigate to portal selection — update with router.navigate when wired
-    window.location.href = "/portal-select"
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
+        {error}
+      </div>
+    )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fdf4f0]">
-      <Navbar />
+    <div className="flex flex-col gap-5">
+      {/* Top row: Overview and Simulate panels side-by-side */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <OverviewPanel stats={overview} />
+        <SimulatePanel onSimulate={handleSimulate} isSimulating={isSimulating} />
+      </div>
 
-      <RoleBar
-        userName="User Admin"
-        role="Admin"
-        onSwitchRole={handleSwitchRole}
+      {/* Analytics section: full width below */}
+      <StudentPerformanceDashboard
+        classTrend={classTrend}
+        aiDistribution={riskBuckets}
+        students={students}
       />
-
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
-        {/* Top row: Overview + Simulate */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto]">
-          <OverviewPanel stats={overview} />
-          <div className="lg:w-80">
-            <SimulatePanel onSimulate={handleSimulate} isSimulating={isSimulating} />
-          </div>
-        </div>
-
-        {/* Analytics charts */}
-        <AnalyticsSection
-          weeklyTrend={weeklyTrend}
-          forecast={MOCK_FORECAST}
-          aiDistribution={MOCK_AI_DISTRIBUTION}
-          gradeVsAI={gradeVsAI}
-        />
-
-        {/* Student table */}
-        <StudentTable data={students} />
-      </main>
     </div>
   )
 }

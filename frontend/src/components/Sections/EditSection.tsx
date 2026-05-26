@@ -101,7 +101,12 @@ const EditSection = ({ section, onSuccess }: EditSectionProps) => {
                       Name <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Section name" type="text" {...field} required />
+                      <Input
+                        placeholder="Section name"
+                        type="text"
+                        {...field}
+                        required
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

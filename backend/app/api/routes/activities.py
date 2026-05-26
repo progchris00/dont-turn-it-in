@@ -3,7 +3,7 @@ from typing import Any
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import col, delete, func, select
+from sqlmodel import col, func, select
 
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.models import (

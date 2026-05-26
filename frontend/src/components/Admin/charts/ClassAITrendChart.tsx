@@ -18,15 +18,16 @@ const Y_TICKS = [0, 25, 50, 75, 100]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const toX = (i: number, len: number) =>
-  PAD.left + (i / (len - 1)) * CW
+const toX = (i: number, len: number) => PAD.left + (i / (len - 1)) * CW
 
-const toY = (v: number) =>
-  PAD.top + (1 - v / Y_MAX) * CH
+const toY = (v: number) => PAD.top + (1 - v / Y_MAX) * CH
 
 function linePath(pts: ClassTrendPoint[]): string {
   return pts
-    .map((p, i) => `${i === 0 ? "M" : "L"}${toX(i, pts.length).toFixed(1)},${toY(p.avgAiPercent).toFixed(1)}`)
+    .map(
+      (p, i) =>
+        `${i === 0 ? "M" : "L"}${toX(i, pts.length).toFixed(1)},${toY(p.avgAiPercent).toFixed(1)}`,
+    )
     .join(" ")
 }
 
@@ -55,7 +56,7 @@ export function ClassAITrendChart({ data }: ClassAITrendChartProps) {
     >
       <defs>
         <linearGradient id="class-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#ea580c" stopOpacity="0.18" />
+          <stop offset="0%" stopColor="#ea580c" stopOpacity="0.18" />
           <stop offset="100%" stopColor="#ea580c" stopOpacity="0.01" />
         </linearGradient>
       </defs>
@@ -66,14 +67,20 @@ export function ClassAITrendChart({ data }: ClassAITrendChartProps) {
         return (
           <g key={t}>
             <line
-              x1={PAD.left} y1={y}
-              x2={PAD.left + CW} y2={y}
-              stroke="#f3f4f6" strokeWidth="1"
+              x1={PAD.left}
+              y1={y}
+              x2={PAD.left + CW}
+              y2={y}
+              stroke="#f3f4f6"
+              strokeWidth="1"
             />
             <text
-              x={PAD.left - 8} y={y}
-              dominantBaseline="middle" textAnchor="end"
-              fontSize="10" fill="#9ca3af"
+              x={PAD.left - 8}
+              y={y}
+              dominantBaseline="middle"
+              textAnchor="end"
+              fontSize="10"
+              fill="#9ca3af"
             >
               {t}%
             </text>
@@ -85,8 +92,11 @@ export function ClassAITrendChart({ data }: ClassAITrendChartProps) {
       {data.map((p, i) => (
         <text
           key={p.week}
-          x={toX(i, data.length)} y={PAD.top + CH + 18}
-          textAnchor="middle" fontSize="10" fill="#9ca3af"
+          x={toX(i, data.length)}
+          y={PAD.top + CH + 18}
+          textAnchor="middle"
+          fontSize="10"
+          fill="#9ca3af"
         >
           {p.week}
         </text>
@@ -98,16 +108,23 @@ export function ClassAITrendChart({ data }: ClassAITrendChartProps) {
       {/* Line */}
       <path
         d={linePath(data)}
-        fill="none" stroke="#ea580c" strokeWidth="2.5"
-        strokeLinejoin="round" strokeLinecap="round"
+        fill="none"
+        stroke="#ea580c"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
       />
 
       {/* Points */}
       {data.map((p, i) => (
         <circle
           key={p.week}
-          cx={toX(i, data.length)} cy={toY(p.avgAiPercent)}
-          r="4" fill="#fff" stroke="#ea580c" strokeWidth="2"
+          cx={toX(i, data.length)}
+          cy={toY(p.avgAiPercent)}
+          r="4"
+          fill="#fff"
+          stroke="#ea580c"
+          strokeWidth="2"
         >
           <title>{`${p.week}: ${p.avgAiPercent}%`}</title>
         </circle>
@@ -115,8 +132,11 @@ export function ClassAITrendChart({ data }: ClassAITrendChartProps) {
 
       {/* Y-axis label */}
       <text
-        x={12} y={PAD.top + CH / 2}
-        textAnchor="middle" fontSize="10" fill="#6b7280"
+        x={12}
+        y={PAD.top + CH / 2}
+        textAnchor="middle"
+        fontSize="10"
+        fill="#6b7280"
         transform={`rotate(-90,12,${PAD.top + CH / 2})`}
       >
         Avg AI %
