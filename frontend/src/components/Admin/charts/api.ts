@@ -1,6 +1,6 @@
 import type { ClassTrendPoint, RiskBucket, RiskLevel } from "./dashboardData"
 
-const API_BASE = "/api/v1/admin/analytics"
+const API_BASE = `${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/api/v1/admin/analytics`
 
 async function fetchJSON<T>(url: string): Promise<T> {
   const token = localStorage.getItem("access_token")
@@ -115,7 +115,12 @@ export async function fetchDashboardData() {
   const distribution = distRes.distribution || []
   const aiDistribution: RiskBucket[] = distribution.map((d) => ({
     label: d.riskLevel as RiskLevel,
-    color: "#000000",
+    color:
+      d.riskLevel === "Low"
+        ? "#fdba74"
+        : d.riskLevel === "High"
+          ? "#ea580c"
+          : "#fb923c",
     count: d.studentCount,
   }))
 

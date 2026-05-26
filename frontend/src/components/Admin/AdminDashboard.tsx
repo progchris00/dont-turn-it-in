@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 
+import { BarChart3, Sparkles, Users } from "lucide-react"
+
 import { fetchDashboardData } from "./charts/api"
 import type {
   ClassTrendPoint,
@@ -8,8 +10,15 @@ import type {
   RiskLevel,
 } from "./charts/dashboardData"
 import { StudentPerformanceDashboard } from "./charts/StudentPerformanceDashboard"
-import { OverviewPanel } from "./OverviewPanel"
 import { SimulatePanel } from "./SimulatePanel"
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 type DashboardData = Awaited<ReturnType<typeof fetchDashboardData>>
 
@@ -119,34 +128,134 @@ export function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600">
-        Loading analytics…
-      </div>
+      <Card>
+        <CardContent className="py-6 text-sm text-muted-foreground">
+          Loading analytics…
+        </CardContent>
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
-        {error}
-      </div>
+      <Card className="border-destructive/20 bg-destructive/5">
+        <CardHeader>
+          <CardTitle className="text-base text-destructive">
+            Analytics unavailable
+          </CardTitle>
+          <CardDescription className="text-destructive/80">
+            {error}
+          </CardDescription>
+        </CardHeader>
+      </Card>
     )
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Top row: Overview and Simulate panels side-by-side */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <OverviewPanel stats={overview} />
-        <SimulatePanel onSimulate={handleSimulate} isSimulating={isSimulating} />
-      </div>
+    <div className="flex flex-col gap-6">
+      <section className="space-y-4 rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl space-y-3">
+            <Badge variant="secondary" className="gap-1.5 px-3 py-1">
+              <Sparkles className="h-3.5 w-3.5" />
+              Admin dashboard
+            </Badge>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-semibold tracking-tight">
+                Analytics built for quick scans and deeper review.
+              </h1>
+              <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+                Track submission volume, class risk, and student forecasts from
+                one dashboard that follows the app&apos;s shared card and surface
+                system.
+              </p>
+            </div>
+          </div>
 
-      {/* Analytics section: full width below */}
-      <StudentPerformanceDashboard
-        classTrend={classTrend}
-        aiDistribution={riskBuckets}
-        students={students}
-      />
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline" className="gap-1.5 px-3 py-1">
+              <Users className="h-3.5 w-3.5" />
+              {overview.num_students} students
+            </Badge>
+            <Badge variant="outline" className="gap-1.5 px-3 py-1">
+              <BarChart3 className="h-3.5 w-3.5" />
+              {overview.num_submissions} submissions
+            </Badge>
+          </div>
+        </div>
+
+        <StatWidget
+          stats={[
+            {
+              label: "Students",
+              value: overview.num_students,
+              helper: "Active learners in the class",
+            },
+            {
+              label: "Submissions",
+              value: overview.num_submissions,
+              helper: "Tracked across the current term",
+            },
+            {
+              label: "Avg AI next",
+              value: `${Number(overview.avg_next_ai_percent).toFixed(0)}%`,
+              helper: "Forecasted next-submission AI rate",
+            },
+            {
+              label: "Risk score",
+              value: Number(overview.class_risk_score).toFixed(1),
+              helper: overview.class_risk_label,
+            },
+          ]}
+        />
+      </section>
+
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b bg-muted/30">
+          <CardTitle className="text-lg">Student performance</CardTitle>
+          <CardDescription>
+            Forecasts, AI distribution, and class trend signals.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          <StudentPerformanceDashboard
+            classTrend={classTrend}
+            aiDistribution={riskBuckets}
+            students={students}
+          />
+        </CardContent>
+      </Card>
+
+      <SimulatePanel onSimulate={handleSimulate} isSimulating={isSimulating} />
+    </div>
+  )
+}
+
+function StatWidget({
+  stats,
+}: {
+  stats: Array<{
+    label: string
+    value: string | number
+    helper: string
+  }>
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {stats.map((stat) => (
+        <div
+          key={stat.label}
+          className="rounded-2xl border bg-muted/25 p-4 shadow-sm"
+        >
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            {stat.label}
+          </p>
+          <p className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
+            {stat.value}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{stat.helper}</p>
+        </div>
+      ))}
     </div>
   )
 }

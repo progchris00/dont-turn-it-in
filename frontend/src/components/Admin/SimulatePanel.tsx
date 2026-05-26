@@ -1,5 +1,14 @@
 import { Loader2, Zap } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 export function SimulatePanel({
   onSimulate,
   isSimulating,
@@ -10,18 +19,23 @@ export function SimulatePanel({
   isSimulating: boolean
 }) {
   return (
-    <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-      <header className="border-b border-gray-100 px-5 py-4 flex items-center justify-between">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
-          Simulate
-        </h2>
-        <Zap className="h-4 w-4 text-gray-300" />
-      </header>
-      <div className="p-5">
-        <button
+    <Card>
+      <CardHeader className="border-b bg-muted/30">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg">Simulate</CardTitle>
+            <CardDescription>
+              Trigger a mock submission to refresh the dashboard.
+            </CardDescription>
+          </div>
+          <Zap className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 p-4 sm:p-6">
+        <Button
           type="button"
           disabled={isSimulating}
-          className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+          className="w-full"
           onClick={() => {
             // No backend simulate endpoint yet.
             onSimulate({})
@@ -33,11 +47,11 @@ export function SimulatePanel({
             <Zap className="w-4 h-4" />
           )}
           {isSimulating ? "Simulating…" : "Simulate New Submission"}
-        </button>
-        <p className="mt-3 text-center text-xs text-gray-400">
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">
           Real-Time impact in all charts
         </p>
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   )
 }

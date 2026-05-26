@@ -156,8 +156,50 @@ export function StudentPerformanceDashboard({
         </Card>
       </div>
 
-      {/* ── Section 3: Table + dynamic forecast ── */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,480px)]">
+      {/* ── Section 3: Forecast above table ── */}
+      <div className="flex flex-col gap-5">
+        {/* 3b — Dynamic per-student forecast */}
+        <section className="min-h-[360px] rounded-xl border border-gray-200 bg-white shadow-sm">
+          <header className="border-b border-gray-100 px-5 py-4">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
+              Predictive Forecast
+            </h2>
+            <p className="mt-0.5 min-h-[1rem] text-xs text-gray-400 transition-all">
+              {selectedStudent
+                ? `${selectedStudent.name} — ${selectedStudent.riskLevel} risk`
+                : "No student selected"}
+            </p>
+          </header>
+
+          <div className="p-5">
+            <div className="min-h-[260px]">
+              <StudentForecastChart student={selectedStudent} />
+            </div>
+
+            {/* Legend */}
+            {selectedStudent && (
+              <div className="mt-3 flex items-center gap-4 text-xs text-gray-400">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block h-0.5 w-5 rounded bg-gray-400" />
+                  Historical
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="inline-block h-0.5 w-5 rounded"
+                    style={{
+                      background: `repeating-linear-gradient(90deg,
+                        ${selectedStudent ? "#9ca3af" : "#d1d5db"} 0,
+                        ${selectedStudent ? "#9ca3af" : "#d1d5db"} 5px,
+                        transparent 5px, transparent 8px)`,
+                    }}
+                  />
+                  Forecast
+                </span>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* 3a — Student table */}
         <section className="min-h-[360px] rounded-xl border border-gray-200 bg-white shadow-sm">
           <header className="border-b border-gray-100 px-5 py-4">
@@ -204,48 +246,6 @@ export function StudentPerformanceDashboard({
               ↑ Select any row to load the student's forecast
             </p>
           )}
-        </section>
-
-        {/* 3b — Dynamic per-student forecast */}
-        <section className="min-h-[360px] rounded-xl border border-gray-200 bg-white shadow-sm">
-          <header className="border-b border-gray-100 px-5 py-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-800">
-              Predictive Forecast
-            </h2>
-            <p className="mt-0.5 min-h-[1rem] text-xs text-gray-400 transition-all">
-              {selectedStudent
-                ? `${selectedStudent.name} — ${selectedStudent.riskLevel} risk`
-                : "No student selected"}
-            </p>
-          </header>
-
-          <div className="p-5">
-            <div className="min-h-[260px]">
-              <StudentForecastChart student={selectedStudent} />
-            </div>
-
-            {/* Legend */}
-            {selectedStudent && (
-              <div className="mt-3 flex items-center gap-4 text-xs text-gray-400">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block h-0.5 w-5 rounded bg-gray-400" />
-                  Historical
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className="inline-block h-0.5 w-5 rounded"
-                    style={{
-                      background: `repeating-linear-gradient(90deg,
-                        ${selectedStudent ? "#9ca3af" : "#d1d5db"} 0,
-                        ${selectedStudent ? "#9ca3af" : "#d1d5db"} 5px,
-                        transparent 5px, transparent 8px)`,
-                    }}
-                  />
-                  Forecast
-                </span>
-              </div>
-            )}
-          </div>
         </section>
       </div>
     </div>
